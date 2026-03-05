@@ -18,21 +18,20 @@ function render(active: string, title: string, bodyTemplate: string, data: Recor
 
 export function handleUI(request: Request): Response {
 	const url = new URL(request.url);
-	const path = url.pathname.replace(/\/+$/, '') || '/ui';
-	const page = path.replace('/ui', '') || '/';
+	const path = url.pathname.replace(/\/+$/, '') || '/';
 
-	switch (page) {
+	switch (path) {
 		case '/':
 			return render('home', 'Home', home, homeData);
-		case '/neuron':
+		case '/ui/neuron':
 			return render('neuron', 'Neuron Simulation', neuron, { params: neuronParams });
-		case '/vision':
+		case '/ui/vision':
 			return render('vision', 'Visual Cortex', vision, { stages: visionStages });
-		case '/ask':
+		case '/ui/ask':
 			return render('ask', 'Neuro Tutor', ask, askData);
-		case '/plasticity':
+		case '/ui/plasticity':
 			return render('plasticity', 'Synaptic Plasticity', plasticity, { params: plasticityParams });
 		default:
-			return render('home', 'Not Found', '<h1>404</h1><p class="subtitle">Page not found</p><p><a href="/ui" style="color:var(--primary)">Back to home</a></p>', {});
+			return render('home', 'Not Found', '<h1>404</h1><p class="subtitle">Page not found</p><p><a href="/" style="color:var(--primary)">Back to home</a></p>', {});
 	}
 }
