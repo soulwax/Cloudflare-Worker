@@ -1,27 +1,46 @@
-/**
- * Welcome to Cloudflare Workers! This is your first worker.
- *
- * - Run `npm run dev` in your terminal to start a development server
- * - Open a browser tab at http://localhost:8787/ to see your worker in action
- * - Run `npm run deploy` to publish your worker
- *
- * Bind resources to your worker in `wrangler.jsonc`. After adding bindings, a type definition for the
- * `Env` object can be regenerated with `npm run cf-typegen`.
- *
- * Learn more at https://developers.cloudflare.com/workers/
- */
+import { handleNeuron } from './routes/neuron';
+import { handleVision } from './routes/vision';
+import { handleAsk } from './routes/ask';
+import { handlePlasticity } from './routes/plasticity';
+
 export interface Env {
-	// If you set another name in the Wrangler config file as the value for 'binding',
-	// replace "AI" with the variable name you defined.
 	AI: Ai;
 }
 
+const ROUTES: Record<string, string> = {
+	'/neuron': 'Leaky Integrate-and-Fire neuron simulation. Params: tau, threshold, inputCurrent, duration, restingPotential, resetPotential, refractoryPeriod, dt',
+	'/vision': 'Image classification via ResNet-50, mapped to the ventral visual stream (V1 -> V2 -> V4 -> IT -> PFC). Param: url=<image_url>',
+	'/ask': 'Socratic neuroscience tutor. Params: q=<question>, topic=<action-potential|synapse|plasticity|visual-system|neural-coding|memory>',
+	'/plasticity': 'Spike-Timing Dependent Plasticity (STDP) simulation. Params: deltaT, pairCount, aPlus, aMinus, tauPlus, tauMinus, initialWeight',
+};
+
 export default {
 	async fetch(request, env): Promise<Response> {
-		const response = await env.AI.run('@cf/meta/llama-3.1-8b-instruct' as any, {
-			prompt: 'What is the origin of the phrase Hello, World',
-		});
+		const url = new URL(request.url);
+		const path = url.pathname;
 
-		return new Response(JSON.stringify(response));
+		switch (path) {
+			case '/neuron':
+				return handleNeuron(request);
+			case '/vision':
+				return handleVision(request, env);
+			case '/ask':
+				return handleAsk(request, env);
+			case '/plasticity':
+				return handlePlasticity(request);
+			default:
+				return new Response(
+					JSON.stringify(
+						{
+							name: 'Neuro Explorer',
+							description: 'An interactive API for learning neuroscience through AI and simulation',
+							routes: ROUTES,
+						},
+						null,
+						2
+					),
+					{ headers: { 'Content-Type': 'application/json' } }
+				);
+		}
 	},
 } satisfies ExportedHandler<Env>;
