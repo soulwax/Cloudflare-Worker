@@ -1,9 +1,9 @@
-import { handleAsk } from './routes/ask';
-import { handleNeuron } from './routes/neuron';
-import { handlePlasticity } from './routes/plasticity';
-import { handleVision } from './routes/vision';
-import { handleUI } from './ui';
-import type { AiClient } from './ai/client';
+import { handleAsk } from './routes/ask.js';
+import { handleNeuron } from './routes/neuron.js';
+import { handlePlasticity } from './routes/plasticity.js';
+import { handleVision } from './routes/vision.js';
+import { handleUI } from './ui.js';
+import type { AiClient } from './ai/client.js';
 
 const ROUTES: Record<string, string> = {
 	'/neuron':

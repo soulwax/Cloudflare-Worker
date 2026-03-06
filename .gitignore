@@ -168,3 +168,6 @@ dist
 .vercel/
 CLAUDE.md
 AGENTS.md
+
+.vercel
+.env*.local

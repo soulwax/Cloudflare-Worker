@@ -1,10 +1,10 @@
 import { Liquid } from 'liquidjs';
-import { layout } from './templates/layout';
-import { home, homeData } from './templates/home';
-import { neuron, neuronParams } from './templates/neuron';
-import { vision, visionStages } from './templates/vision';
-import { ask, askData } from './templates/ask';
-import { plasticity, plasticityParams } from './templates/plasticity';
+import { layout } from './templates/layout.js';
+import { home, homeData } from './templates/home.js';
+import { neuron, neuronParams } from './templates/neuron.js';
+import { vision, visionStages } from './templates/vision.js';
+import { ask, askData } from './templates/ask.js';
+import { plasticity, plasticityParams } from './templates/plasticity.js';
 
 const engine = new Liquid({ cache: true });
 

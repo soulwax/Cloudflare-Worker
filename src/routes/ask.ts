@@ -1,4 +1,4 @@
-import type { AiClient } from '../ai/client';
+import type { AiClient } from '../ai/client.js';
 
 /**
  * Neuroscience Socratic Tutor

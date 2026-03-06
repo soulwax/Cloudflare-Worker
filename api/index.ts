@@ -1,5 +1,5 @@
-import { handleRequest } from '../src/app';
-import { createRestAiClient, type AiClient } from '../src/ai/client';
+import { handleRequest } from '../src/app.js';
+import { createRestAiClient, type AiClient } from '../src/ai/client.js';
 
 const MISSING_AI_CONFIG_MESSAGE =
 	'Workers AI is not configured. Set CLOUDFLARE_ACCOUNT_ID (or CF_ACCOUNT_ID) and CLOUDFLARE_API_TOKEN (or CF_API_TOKEN).';

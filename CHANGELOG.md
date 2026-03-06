@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.3.4] - 2026-03-06
+
+### Fixed
+
+- Vercel Node runtime module resolution error (`ERR_MODULE_NOT_FOUND` for `/var/task/src/app`) by switching internal TypeScript import specifiers to explicit `.js` paths for ESM runtime compatibility.
+
+## [0.3.3] - 2026-03-06
+
+### Fixed
+
+- Vercel function crash (`FUNCTION_INVOCATION_FAILED`) caused by Node loading `api/index.js` as CommonJS while emitted code used ESM `import` syntax.
+- Added `"type": "module"` to ensure Vercel executes the API bundle as ES modules.
+
 ## [0.3.2] - 2026-03-06
 
 ### Fixed

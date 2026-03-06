@@ -1,5 +1,5 @@
-import { handleRequest } from './app';
-import { createBindingAiClient, type AiBindingLike } from './ai/client';
+import { handleRequest } from './app.js';
+import { createBindingAiClient, type AiBindingLike } from './ai/client.js';
 
 export interface Env {
 	AI: AiBindingLike;

@@ -1,6 +1,7 @@
 {
 	"name": "neuro-explorer",
-	"version": "0.3.2",
+	"version": "0.3.4",
+	"type": "module",
 	"private": true,
 	"scripts": {
 		"build": "npm run typecheck",
