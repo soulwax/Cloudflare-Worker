@@ -1,5 +1,6 @@
 import { handleAsk } from './routes/ask.js';
 import { handleECG } from './routes/ecg.js';
+import { handleGridCell } from './routes/grid-cell.js';
 import { handleNeuron } from './routes/neuron.js';
 import { handlePlasticity } from './routes/plasticity.js';
 import { handleVision } from './routes/vision.js';
@@ -14,6 +15,8 @@ const ROUTES: Record<string, string> = {
 	'/plasticity': 'Spike-Timing Dependent Plasticity (STDP) simulation. Params: deltaT, pairCount, aPlus, aMinus, tauPlus, tauMinus, initialWeight',
 	'/ecg':
 		'12-lead ECG simulator with tweakable heart rate, axis, intervals, amplitudes, ST shift, noise, and rhythm variability.',
+	'/grid-cell':
+		'Entorhinal grid-cell simulator with spatial firing fields, navigation path, and rate-map controls. Params: arenaSize, durationSec, speed, spacing, orientation, phaseX, phaseY, sharpness, maxRate, thetaMod, turnNoise',
 };
 
 export interface AppEnv {
@@ -46,6 +49,8 @@ export async function handleRequest(request: Request, env: AppEnv): Promise<Resp
 			return handlePlasticity(request);
 		case '/ecg':
 			return handleECG(request);
+		case '/grid-cell':
+			return handleGridCell(request);
 		case '/routes':
 			return new Response(
 				JSON.stringify(

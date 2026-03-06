@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.5.0] - 2026-03-06
+
+### Added
+
+- New `Grid Cell Navigator` module with API route `GET /grid-cell` for simulating entorhinal hexagonal firing fields during spatial exploration.
+- New interactive UI page at `/ui/grid-cell` with controls for arena size, duration, speed, grid spacing, orientation, spatial phase, field sharpness, max firing rate, theta modulation, and turning noise.
+- Visualizations for exploration path, spike locations, 2D firing-rate heatmap, and instantaneous firing-rate trace.
+
+### Changed
+
+- Sidebar navigation and home-page module catalog now include the grid-cell explorer.
+- Test coverage now includes deterministic validation of the new grid-cell API route.
+
 ## [0.4.0] - 2026-03-06
 
 ### Added

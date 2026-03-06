@@ -6,6 +6,7 @@ import { vision, visionStages } from './templates/vision.js';
 import { ask, askData } from './templates/ask.js';
 import { plasticity, plasticityParams } from './templates/plasticity.js';
 import { ecg, ecgLeads, ecgParams } from './templates/ecg.js';
+import { gridCell, gridCellParams } from './templates/grid-cell.js';
 
 const engine = new Liquid({ cache: true });
 
@@ -32,6 +33,8 @@ export function handleUI(_request: Request, path: string): Response {
 			return render('plasticity', 'Synaptic Plasticity', plasticity, { params: plasticityParams });
 		case '/ui/ecg':
 			return render('ecg', '12-Lead ECG Explorer', ecg, { params: ecgParams, leads: ecgLeads });
+		case '/ui/grid-cell':
+			return render('grid-cell', 'Grid Cell Navigator', gridCell, { params: gridCellParams });
 		default:
 			return render(
 				'home',

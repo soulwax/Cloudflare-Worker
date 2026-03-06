@@ -23,6 +23,7 @@ describe('Neuro Explorer worker', () => {
 		expect(data.name).toBe('Neuro Explorer');
 		expect(data.routes['/ask']).toContain('Socratic neuroscience tutor');
 		expect(data.routes['/ecg']).toContain('12-lead ECG simulator');
+		expect(data.routes['/grid-cell']).toContain('Entorhinal grid-cell simulator');
 	});
 
 	it('serves the HTML UI shell at root (integration style)', async () => {
@@ -30,5 +31,24 @@ describe('Neuro Explorer worker', () => {
 		expect(response.status).toBe(200);
 		expect(response.headers.get('Content-Type')).toContain('text/html');
 		expect(await response.text()).toContain('Neuro Explorer');
+	});
+
+	it('returns a deterministic grid-cell map (unit style)', async () => {
+		const request = new IncomingRequest('http://example.com/grid-cell?durationSec=20&arenaSize=100');
+		const ctx = createExecutionContext();
+		const response = await worker.fetch(request, env, ctx);
+		await waitOnExecutionContext(ctx);
+
+		expect(response.status).toBe(200);
+		const data = (await response.json()) as {
+			path: Array<{ x: number; y: number; rateHz: number }>;
+			spikes: Array<{ x: number; y: number }>;
+			rateMap: number[][];
+			summary: { coveragePct: number };
+		};
+		expect(data.path.length).toBeGreaterThan(100);
+		expect(data.spikes.length).toBeGreaterThan(0);
+		expect(data.rateMap.length).toBe(24);
+		expect(data.summary.coveragePct).toBeGreaterThan(5);
 	});
 });

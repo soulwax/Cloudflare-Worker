@@ -17,10 +17,11 @@ export const home = `
 </div>
 
 <div class="explanation" style="margin-top:2rem">
-  <h3>Why these five?</h3>
+  <h3>Why these six?</h3>
   <p>Each module maps an AI or computational technique to the biological system that inspired it.
   The neuron simulation shows how real cells integrate and fire.
   The vision module shows how a deep CNN mirrors your visual cortex.
+  The grid-cell module shows how the entorhinal cortex builds a metric for space itself.
   The tutor lets you interrogate these concepts with an LLM.
   The plasticity module shows how synapses learn &mdash; the biological ancestor of backpropagation.
   The ECG explorer shows how cardiac electrophysiology projects into 12 clinical leads.</p>
@@ -39,6 +40,13 @@ export const homeData = {
 			name: 'Visual Cortex',
 			description: 'Classify images with ResNet-50 and see how each network layer maps to a region of your ventral visual stream, from V1 to prefrontal cortex.',
 			tags: ['ResNet-50', 'image classification', 'Workers AI'],
+		},
+		{
+			path: '/ui/grid-cell',
+			name: 'Grid Cell Navigator',
+			description:
+				'Simulate a rodent exploring an arena and watch a medial entorhinal grid cell produce a hexagonal firing lattice with tunable spacing, orientation, phase, and theta modulation.',
+			tags: ['spatial navigation', 'entorhinal cortex', 'interactive'],
 		},
 		{
 			path: '/ui/ask',
