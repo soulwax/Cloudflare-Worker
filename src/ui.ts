@@ -7,6 +7,7 @@ import { ask, askData } from './templates/ask.js';
 import { plasticity, plasticityParams } from './templates/plasticity.js';
 import { ecg, ecgLeads, ecgParams } from './templates/ecg.js';
 import { gridCell, gridCellParams } from './templates/grid-cell.js';
+import { dopamine, dopamineParams } from './templates/dopamine.js';
 
 const engine = new Liquid({ cache: true });
 
@@ -35,6 +36,8 @@ export function handleUI(_request: Request, path: string): Response {
 			return render('ecg', '12-Lead ECG Explorer', ecg, { params: ecgParams, leads: ecgLeads });
 		case '/ui/grid-cell':
 			return render('grid-cell', 'Grid Cell Navigator', gridCell, { params: gridCellParams });
+		case '/ui/dopamine':
+			return render('dopamine', 'Dopamine Prediction Error Lab', dopamine, { params: dopamineParams });
 		default:
 			return render(
 				'home',

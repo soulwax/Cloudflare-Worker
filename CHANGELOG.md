@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.6.0] - 2026-03-06
+
+### Added
+
+- New `Dopamine Prediction Error Lab` module with API route `GET /dopamine` for simulating reward-prediction errors over repeated learning trials.
+- New interactive UI page at `/ui/dopamine` with controls for cue timing, reward timing, reward size, learning rate, discount factor, eligibility-trace decay, trial count, and reward omission trial.
+- Visualizations for phasic prediction-error traces, learned value function, and cue-vs-reward learning curves across trials.
+
+### Changed
+
+- Sidebar navigation and home-page module catalog now include the dopamine learning explorer.
+- Test coverage now validates route metadata and dopamine omission/cue-shift behavior.
+
 ## [0.5.0] - 2026-03-06
 
 ### Added

@@ -1,4 +1,5 @@
 import { handleAsk } from './routes/ask.js';
+import { handleDopamine } from './routes/dopamine.js';
 import { handleECG } from './routes/ecg.js';
 import { handleGridCell } from './routes/grid-cell.js';
 import { handleNeuron } from './routes/neuron.js';
@@ -17,6 +18,8 @@ const ROUTES: Record<string, string> = {
 		'12-lead ECG simulator with tweakable heart rate, axis, intervals, amplitudes, ST shift, noise, and rhythm variability.',
 	'/grid-cell':
 		'Entorhinal grid-cell simulator with spatial firing fields, navigation path, and rate-map controls. Params: arenaSize, durationSec, speed, spacing, orientation, phaseX, phaseY, sharpness, maxRate, thetaMod, turnNoise',
+	'/dopamine':
+		'Dopamine reward-prediction error simulator. Params: durationMs, dtMs, trialCount, cueTime, rewardTime, rewardSize, learningRate, discount, traceDecay, omissionTrial',
 };
 
 export interface AppEnv {
@@ -51,6 +54,8 @@ export async function handleRequest(request: Request, env: AppEnv): Promise<Resp
 			return handleECG(request);
 		case '/grid-cell':
 			return handleGridCell(request);
+		case '/dopamine':
+			return handleDopamine(request);
 		case '/routes':
 			return new Response(
 				JSON.stringify(

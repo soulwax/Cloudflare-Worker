@@ -17,11 +17,12 @@ export const home = `
 </div>
 
 <div class="explanation" style="margin-top:2rem">
-  <h3>Why these six?</h3>
+  <h3>Why these seven?</h3>
   <p>Each module maps an AI or computational technique to the biological system that inspired it.
   The neuron simulation shows how real cells integrate and fire.
   The vision module shows how a deep CNN mirrors your visual cortex.
   The grid-cell module shows how the entorhinal cortex builds a metric for space itself.
+  The dopamine module shows how learning re-times reward prediction errors.
   The tutor lets you interrogate these concepts with an LLM.
   The plasticity module shows how synapses learn &mdash; the biological ancestor of backpropagation.
   The ECG explorer shows how cardiac electrophysiology projects into 12 clinical leads.</p>
@@ -47,6 +48,13 @@ export const homeData = {
 			description:
 				'Simulate a rodent exploring an arena and watch a medial entorhinal grid cell produce a hexagonal firing lattice with tunable spacing, orientation, phase, and theta modulation.',
 			tags: ['spatial navigation', 'entorhinal cortex', 'interactive'],
+		},
+		{
+			path: '/ui/dopamine',
+			name: 'Dopamine Prediction Error Lab',
+			description:
+				'Model classical conditioning with temporal-difference learning and watch dopamine-like reward prediction errors shift from reward delivery to cue onset, including omission dips.',
+			tags: ['reinforcement learning', 'reward prediction', 'interactive'],
 		},
 		{
 			path: '/ui/ask',
