@@ -81,22 +81,77 @@ export async function handleVision(request: Request, ai: AiClient): Promise<Resp
 						'ResNet-50 has 50 layers organized in 4 blocks of increasing abstraction — almost exactly mirroring the ventral visual stream from V1 to IT cortex. This is not a coincidence: both systems solve the same problem (object recognition) under similar constraints (hierarchical composition of features).',
 				},
 				null,
-				2
+				2,
 			),
-			{ headers: { 'Content-Type': 'application/json' } }
+			{ headers: { 'Content-Type': 'application/json' } },
 		);
 	}
 
+	// Fetch image with timeout using AbortController
+	const controller = new AbortController();
+	const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
 	try {
-		const imageResponse = await fetch(imageUrl);
+		const imageResponse = await fetch(imageUrl, {
+			signal: controller.signal,
+		});
+		clearTimeout(timeoutId);
+
 		if (!imageResponse.ok) {
-			return new Response(JSON.stringify({ error: `Failed to fetch image: ${imageResponse.status}` }), {
-				status: 400,
-				headers: { 'Content-Type': 'application/json' },
-			});
+			return new Response(
+				JSON.stringify({
+					error: `Failed to fetch image`,
+					details: {
+						status: imageResponse.status,
+						statusText: imageResponse.statusText,
+						url: imageUrl,
+					},
+					suggestion:
+						imageResponse.status === 403
+							? 'The URL might be blocked. Try a different image URL that allows public access.'
+							: imageResponse.status === 404
+								? 'The image URL was not found. Please check the URL.'
+								: 'The image could not be fetched. This may be due to CORS restrictions, network issues, or the server blocking requests.',
+				}),
+				{
+					status: 400,
+					headers: { 'Content-Type': 'application/json' },
+				},
+			);
+		}
+
+		// Check content type to ensure it's an image
+		const contentType = imageResponse.headers.get('content-type') || '';
+		if (!contentType.startsWith('image/')) {
+			return new Response(
+				JSON.stringify({
+					error: 'Invalid content type',
+					details: { contentType, url: imageUrl },
+					suggestion: 'The URL must point to a valid image file (JPEG, PNG, GIF, WebP, etc.)',
+				}),
+				{
+					status: 400,
+					headers: { 'Content-Type': 'application/json' },
+				},
+			);
 		}
 
 		const imageBytes = new Uint8Array(await imageResponse.arrayBuffer());
+
+		// Check minimum size (empty or too small)
+		if (imageBytes.length < 100) {
+			return new Response(
+				JSON.stringify({
+					error: 'Image too small or corrupted',
+					details: { size: imageBytes.length, url: imageUrl },
+					suggestion: 'The image file appears to be too small or corrupted. Please try a different image.',
+				}),
+				{
+					status: 400,
+					headers: { 'Content-Type': 'application/json' },
+				},
+			);
+		}
 
 		const results = await ai.run('@cf/microsoft/resnet-50', {
 			image: [...imageBytes],
@@ -112,9 +167,9 @@ export async function handleVision(request: Request, ai: AiClient): Promise<Resp
 						'The labels above are the output of the final "prefrontal" layer. To reach this decision, the image was processed through all 50 layers — from raw pixel edges (V1) to full object representations (IT) to categorical decisions (PFC). Your brain does essentially the same thing in ~150ms.',
 				},
 				null,
-				2
+				2,
 			),
-			{ headers: { 'Content-Type': 'application/json' } }
+			{ headers: { 'Content-Type': 'application/json' } },
 		);
 	} catch (err: any) {
 		return new Response(JSON.stringify({ error: err.message }), {
