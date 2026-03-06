@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.2] - 2026-03-06
+
+### Fixed
+
+- Vercel root route serving a placeholder static page by removing `public/index.html` and preserving only an empty output directory for build validation.
+- Catch-all rewrite now explicitly targets `/api/index` to avoid route ambiguity.
+
 ## [0.3.1] - 2026-03-06
 
 ### Fixed
