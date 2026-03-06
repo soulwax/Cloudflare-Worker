@@ -1,37 +1,89 @@
 import Link from "next/link";
+import { moduleCards } from "~/lib/site";
 
 export default function HomePage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-      <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
-        <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
-          Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
+    <div className="space-y-6">
+      <section className="rounded-[32px] border border-white/10 bg-white/6 p-6 shadow-[0_18px_50px_rgba(3,10,20,0.24)] backdrop-blur sm:p-8">
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-cyan-200/80">
+          Phase 1 Migration
+        </p>
+        <h1 className="mt-3 max-w-4xl text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+          Neuro Explorer on a typed React/App Router foundation
         </h1>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
+        <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-300 sm:text-base">
+          This new frontend track exists to replace the current Liquid plus
+          string-template UI with reusable, typed components. The neuroscience
+          engines stay in TypeScript; the UI moves first.
+        </p>
+        <div className="mt-6 flex flex-wrap gap-3">
           <Link
-            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-            href="https://create.t3.gg/en/usage/first-steps"
-            target="_blank"
+            href="/brain-atlas"
+            className="rounded-full bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 shadow-[0_12px_28px_rgba(103,211,255,0.24)] transition hover:-translate-y-0.5"
           >
-            <h3 className="text-2xl font-bold">First Steps →</h3>
-            <div className="text-lg">
-              Just the basics - Everything you need to know to set up your
-              database and authentication.
-            </div>
+            Open migrated Brain Atlas
           </Link>
-          <Link
-            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
+          <a
             href="https://create.t3.gg/en/introduction"
             target="_blank"
+            rel="noreferrer"
+            className="rounded-full border border-white/10 bg-white/6 px-5 py-3 text-sm font-semibold text-slate-100 transition hover:bg-white/10"
           >
-            <h3 className="text-2xl font-bold">Documentation →</h3>
-            <div className="text-lg">
-              Learn more about Create T3 App, the libraries it uses, and how to
-              deploy it.
-            </div>
-          </Link>
+            T3 docs
+          </a>
         </div>
-      </div>
-    </main>
+      </section>
+
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {moduleCards.map((module) => {
+          const cardBody = (
+            <>
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="text-xl font-semibold text-white">{module.title}</h2>
+                <span
+                  className={`rounded-full px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] ${
+                    module.status === "migrated"
+                      ? "bg-cyan-300/15 text-cyan-100"
+                      : "bg-white/8 text-slate-300"
+                  }`}
+                >
+                  {module.status}
+                </span>
+              </div>
+              <p className="mt-4 text-sm leading-7 text-slate-300">
+                {module.description}
+              </p>
+            </>
+          );
+
+          return module.href ? (
+            <Link
+              key={module.slug}
+              href={module.href}
+              className="rounded-[28px] border border-white/10 bg-white/6 p-5 transition hover:-translate-y-0.5 hover:border-cyan-300/25 hover:bg-white/8"
+            >
+              {cardBody}
+            </Link>
+          ) : (
+            <div
+              key={module.slug}
+              className="rounded-[28px] border border-white/10 bg-white/5 p-5"
+            >
+              {cardBody}
+            </div>
+          );
+        })}
+      </section>
+
+      <section className="rounded-[28px] border border-white/10 bg-white/6 p-5 backdrop-blur">
+        <h2 className="text-xl font-semibold text-white">Migration stance</h2>
+        <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-300">
+          This is intentionally not a full Prisma/Auth/tRPC rewrite. The first
+          goal is removing the templating bottleneck by moving pages into typed
+          React components. Once more pages exist here, we can decide whether
+          typed RPC adds enough value to justify itself.
+        </p>
+      </section>
+    </div>
   );
 }

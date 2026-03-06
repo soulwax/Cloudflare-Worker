@@ -1,17 +1,20 @@
 {
 	"name": "neuro-explorer",
-	"version": "0.9.1",
+	"version": "0.10.0",
 	"type": "module",
 	"private": true,
 	"scripts": {
 		"build": "npm run typecheck",
 		"typecheck": "tsc --noEmit",
+		"build:web": "npm --prefix web run build",
 		"deploy": "wrangler deploy",
 		"deploy:vercel": "npx vercel --prod",
 		"dev": "wrangler dev",
+		"dev:web": "npm --prefix web run dev",
 		"dev:vercel": "npx vercel dev",
 		"start": "wrangler dev",
 		"test": "vitest",
+		"typecheck:web": "npm --prefix web run typecheck",
 		"cf-typegen": "wrangler types"
 	},
 	"devDependencies": {

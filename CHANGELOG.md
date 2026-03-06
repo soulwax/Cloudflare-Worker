@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.10.0] - 2026-03-06
+
+### Added
+
+- Added a parallel `web/` frontend track based on Next.js App Router and the T3 scaffold to start replacing the current Liquid/string-template UI with typed React components.
+- Added a migrated `Brain Atlas` page in the new frontend track, including a reusable app shell, typed atlas data, chapter switching, and an SVG-based region explorer.
+- Added root helper scripts `dev:web`, `typecheck:web`, and `build:web` so the new frontend can be worked on without disturbing the current runtime targets.
+
+### Changed
+
+- Documented the new parallel frontend migration strategy in the root README and replaced the generated `web/README.md` with project-specific guidance.
+- Set an explicit `outputFileTracingRoot` for the App Router app to avoid incorrect workspace-root inference in a nested lockfile setup.
+
 ## [0.9.1] - 2026-03-06
 
 ### Changed

@@ -1,29 +1,33 @@
-# Create T3 App
+# Neuro Explorer Web
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+This directory is the typed React/App Router migration track for Neuro Explorer.
 
-## What's next? How do I make an app with this?
+## Why it exists
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+The current production UI in the repository root uses `liquidjs` plus large TypeScript string templates.
+That works across Cloudflare Workers and Vercel, but it becomes inefficient to maintain as the site grows.
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+This `web/` app is the replacement track:
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+- Move pages from string templates to typed React components.
+- Keep the neuroscience models and route logic conceptually separate from the UI.
+- Avoid a full-stack rewrite until the frontend migration proves its value.
 
-## Learn More
+## Current scope
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+- Home page describing the migration stance
+- `Brain Atlas` as the first migrated module
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+## Commands
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+```bash
+npm install
+npm run dev
+npm run typecheck
+npm run build
+```
 
-## How do I deploy this?
+## Notes
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+- This app is not the production deployment target yet.
+- It was scaffolded with `create-t3-app`, but Prisma/Auth/tRPC are intentionally not part of phase 1.

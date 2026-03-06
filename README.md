@@ -14,9 +14,28 @@ The goal is not just to teach code in the abstract, but to turn code into concre
 
 Both targets share the same route logic in [`src/app.ts`](src/app.ts).
 
+## Frontend migration track
+
+The current production UI still lives in `src/templates/*` and is rendered through `liquidjs`.
+In parallel, there is now a typed React/App Router frontend in `web/` that exists to replace the current string-template UI incrementally instead of rewriting the entire stack at once.
+
+Current migration status:
+
+- `web/` is a separate Next.js App Router frontend track.
+- `Brain Atlas` is the first migrated page there.
+- The neuroscience engines and current deployable app remain untouched in the root runtime.
+
 ## Local development
 
 ```bash
+npm install
+npm run dev
+```
+
+For the App Router migration track:
+
+```bash
+cd web
 npm install
 npm run dev
 ```
@@ -42,6 +61,13 @@ npm run deploy
 ```bash
 npm run typecheck
 npm test
+```
+
+Additional helper commands for the migration track:
+
+```bash
+npm run typecheck:web
+npm run build:web
 ```
 
 ## Template engine note
