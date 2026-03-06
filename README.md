@@ -2,6 +2,11 @@
 
 Interactive neuroscience demos with AI-assisted endpoints and a server-rendered Liquid UI.
 
+## Purpose
+
+This project is built to share programming skills with students in neurology while creating tools that are genuinely useful to them.
+The goal is not just to teach code in the abstract, but to turn code into concrete, valuable learning instruments for neuroscience, physiology, and clinical intuition.
+
 ## Runtime targets
 
 - Cloudflare Workers (`src/index.ts`)
