@@ -9,6 +9,8 @@ export interface ModuleCard {
 export const navItems = [
   { href: "/", label: "Home" },
   { href: "/brain-atlas", label: "Brain Atlas" },
+  { href: "/neuron", label: "Neuron" },
+  { href: "/retina", label: "Retina" },
 ] as const;
 
 export const moduleCards: ModuleCard[] = [
@@ -19,6 +21,22 @@ export const moduleCards: ModuleCard[] = [
       "Migrated to App Router as the first typed React slice. Explore major regions in Chapter 1, then switch to Chapter 2 for interlinked circuits.",
     status: "migrated",
     href: "/brain-atlas",
+  },
+  {
+    slug: "neuron",
+    title: "Neuron Simulation",
+    description:
+      "Migrated to App Router as a live local-compute module. Tune the LIF parameters and see the membrane trace update without the old fetch-plus-template cycle.",
+    status: "migrated",
+    href: "/neuron",
+  },
+  {
+    slug: "retina",
+    title: "Retinal Receptive Field Lab",
+    description:
+      "Migrated to App Router with linked heatmaps and tuning curves. It demonstrates the richer interactive pattern for deterministic neuroscience modules.",
+    status: "migrated",
+    href: "/retina",
   },
   {
     slug: "vision",
@@ -32,13 +50,6 @@ export const moduleCards: ModuleCard[] = [
     title: "12-Lead ECG Explorer",
     description:
       "Still on the legacy runtime. It will benefit from typed components because the current UI is a large inline SVG/JS template.",
-    status: "legacy",
-  },
-  {
-    slug: "retina",
-    title: "Retinal Receptive Field Lab",
-    description:
-      "Still on the legacy runtime. Its charts and controls are a natural fit for React components once the migration pattern is stable.",
     status: "legacy",
   },
   {

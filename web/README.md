@@ -16,7 +16,9 @@ This `web/` app is the replacement track:
 ## Current scope
 
 - Home page describing the migration stance
-- `Brain Atlas` as the first migrated module
+- `Brain Atlas`
+- `Neuron Simulation`
+- `Retinal Receptive Field Lab`
 
 ## Commands
 
@@ -31,3 +33,4 @@ npm run build
 
 - This app is not the production deployment target yet.
 - It was scaffolded with `create-t3-app`, but Prisma/Auth/tRPC are intentionally not part of phase 1.
+- Workers AI is intentionally still treated as an external backend boundary for now. Stable deterministic pages migrate before the AI-backed modules.

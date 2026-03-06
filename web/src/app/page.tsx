@@ -2,6 +2,10 @@ import Link from "next/link";
 import { moduleCards } from "~/lib/site";
 
 export default function HomePage() {
+  const migratedCount = moduleCards.filter(
+    (module) => module.status === "migrated",
+  ).length;
+
   return (
     <div className="space-y-6">
       <section className="rounded-[32px] border border-white/10 bg-white/6 p-6 shadow-[0_18px_50px_rgba(3,10,20,0.24)] backdrop-blur sm:p-8">
@@ -16,12 +20,21 @@ export default function HomePage() {
           string-template UI with reusable, typed components. The neuroscience
           engines stay in TypeScript; the UI moves first.
         </p>
+        <p className="mt-3 text-sm font-medium text-amber-100">
+          {migratedCount} modules are now migrated on the stable path.
+        </p>
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
             href="/brain-atlas"
             className="rounded-full bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 shadow-[0_12px_28px_rgba(103,211,255,0.24)] transition hover:-translate-y-0.5"
           >
             Open migrated Brain Atlas
+          </Link>
+          <Link
+            href="/retina"
+            className="rounded-full border border-white/10 bg-white/6 px-5 py-3 text-sm font-semibold text-slate-100 transition hover:bg-white/10"
+          >
+            Open migrated Retina
           </Link>
           <a
             href="https://create.t3.gg/en/introduction"
@@ -82,6 +95,11 @@ export default function HomePage() {
           goal is removing the templating bottleneck by moving pages into typed
           React components. Once more pages exist here, we can decide whether
           typed RPC adds enough value to justify itself.
+        </p>
+        <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-300">
+          Stable-first also means AI stays behind the existing Cloudflare
+          boundary for now. Deterministic modules migrate first; Workers AI
+          integration comes after the frontend pattern is proven.
         </p>
       </section>
     </div>

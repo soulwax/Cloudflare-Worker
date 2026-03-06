@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.11.0] - 2026-03-06
+
+### Added
+
+- Added migrated `Neuron Simulation` and `Retinal Receptive Field Lab` pages to the `web/` App Router frontend track.
+- Added typed simulation libraries for neuron and retina modules in the new frontend so these deterministic experiences run locally without the old fetch-plus-template loop.
+
+### Changed
+
+- Updated the App Router shell with active navigation and a migrated-module count.
+- Updated the migration homepage and documentation to reflect a stable-first strategy: deterministic modules first, Cloudflare Worker and Workers AI integration second.
+
 ## [0.10.0] - 2026-03-06
 
 ### Added
