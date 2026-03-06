@@ -25,6 +25,7 @@ describe('Neuro Explorer worker', () => {
 		expect(data.routes['/ecg']).toContain('12-lead ECG simulator');
 		expect(data.routes['/grid-cell']).toContain('Entorhinal grid-cell simulator');
 		expect(data.routes['/dopamine']).toContain('reward-prediction error simulator');
+		expect(data.routes['/retina']).toContain('Retinal receptive field simulator');
 	});
 
 	it('serves the HTML UI shell at root (integration style)', async () => {
@@ -68,5 +69,28 @@ describe('Neuro Explorer worker', () => {
 		expect(data.snapshots.length).toBeGreaterThanOrEqual(3);
 		expect(data.learningCurve[data.learningCurve.length - 1].cueError).toBeGreaterThan(0);
 		expect(data.summary.omissionDip).toBeLessThan(0);
+	});
+
+	it('returns center-surround retinal tuning data (unit style)', async () => {
+		const request = new IncomingRequest(
+			'http://example.com/retina?stimulusType=spot&stimulusRadius=3.5&surroundStrength=0.7'
+		);
+		const ctx = createExecutionContext();
+		const response = await worker.fetch(request, env, ctx);
+		await waitOnExecutionContext(ctx);
+
+		expect(response.status).toBe(200);
+		const data = (await response.json()) as {
+			response: number;
+			receptiveField: Array<{ value: number }>;
+			sizeTuning: Array<{ x: number; value: number }>;
+			positionScan: Array<{ x: number; value: number }>;
+		};
+		expect(Number.isFinite(data.response)).toBe(true);
+		expect(data.receptiveField.length).toBeGreaterThan(100);
+		expect(data.sizeTuning.length).toBeGreaterThan(8);
+		expect(data.positionScan.length).toBeGreaterThan(20);
+		expect(data.sizeTuning.some((point) => point.value > 0)).toBe(true);
+		expect(data.sizeTuning.some((point) => point.value < 0)).toBe(true);
 	});
 });

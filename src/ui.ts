@@ -8,6 +8,7 @@ import { plasticity, plasticityParams } from './templates/plasticity.js';
 import { ecg, ecgLeads, ecgParams } from './templates/ecg.js';
 import { gridCell, gridCellParams } from './templates/grid-cell.js';
 import { dopamine, dopamineParams } from './templates/dopamine.js';
+import { retina, retinaParams, retinaStimulusTypes } from './templates/retina.js';
 
 const engine = new Liquid({ cache: true });
 
@@ -38,6 +39,8 @@ export function handleUI(_request: Request, path: string): Response {
 			return render('grid-cell', 'Grid Cell Navigator', gridCell, { params: gridCellParams });
 		case '/ui/dopamine':
 			return render('dopamine', 'Dopamine Prediction Error Lab', dopamine, { params: dopamineParams });
+		case '/ui/retina':
+			return render('retina', 'Retinal Receptive Field Lab', retina, { params: retinaParams, stimulusTypes: retinaStimulusTypes });
 		default:
 			return render(
 				'home',

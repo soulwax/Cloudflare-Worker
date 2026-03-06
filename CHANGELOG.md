@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.7.1] - 2026-03-06
+
+### Changed
+
+- Moved the `Neuro Tutor` / Socratic tutor entry to the bottom of the sidebar navigation.
+- Reordered the home-page module catalog so the tutor appears last there as well.
+
+## [0.7.0] - 2026-03-06
+
+### Added
+
+- New `Retinal Receptive Field Lab` module with API route `GET /retina` for simulating ON-center/OFF-surround ganglion-cell responses to spots, annuli, and edges.
+- New interactive UI page at `/ui/retina` with controls for receptive-field geometry, surround strength, stimulus shape, position, and contrast.
+- Visualizations for receptive-field heatmaps, stimulus maps, size-tuning curves, and spatial position scans.
+
+### Changed
+
+- Sidebar navigation and home-page module catalog now include the retina explorer.
+- Test coverage now validates the new retinal center-surround simulator output.
+
 ## [0.6.0] - 2026-03-06
 
 ### Added

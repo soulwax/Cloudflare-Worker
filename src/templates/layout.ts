@@ -76,11 +76,12 @@ export const layout = `<!DOCTYPE html>
       <a href="/"{% if active == "home" %} class="active"{% endif %}>Home</a>
       <a href="/ui/neuron"{% if active == "neuron" %} class="active"{% endif %}>Neuron</a>
       <a href="/ui/vision"{% if active == "vision" %} class="active"{% endif %}>Vision</a>
+      <a href="/ui/retina"{% if active == "retina" %} class="active"{% endif %}>Retina</a>
       <a href="/ui/grid-cell"{% if active == "grid-cell" %} class="active"{% endif %}>Grid Cells</a>
       <a href="/ui/dopamine"{% if active == "dopamine" %} class="active"{% endif %}>Dopamine</a>
-      <a href="/ui/ask"{% if active == "ask" %} class="active"{% endif %}>Ask</a>
       <a href="/ui/plasticity"{% if active == "plasticity" %} class="active"{% endif %}>Plasticity</a>
       <a href="/ui/ecg"{% if active == "ecg" %} class="active"{% endif %}>12-Lead ECG</a>
+      <a href="/ui/ask"{% if active == "ask" %} class="active"{% endif %}>Ask</a>
     </nav>
   </aside>
   <main>

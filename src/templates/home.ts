@@ -17,10 +17,11 @@ export const home = `
 </div>
 
 <div class="explanation" style="margin-top:2rem">
-  <h3>Why these seven?</h3>
+  <h3>Why these eight?</h3>
   <p>Each module maps an AI or computational technique to the biological system that inspired it.
   The neuron simulation shows how real cells integrate and fire.
   The vision module shows how a deep CNN mirrors your visual cortex.
+  The retina lab shows how center-surround antagonism extracts contrast before cortex even sees the signal.
   The grid-cell module shows how the entorhinal cortex builds a metric for space itself.
   The dopamine module shows how learning re-times reward prediction errors.
   The tutor lets you interrogate these concepts with an LLM.
@@ -43,6 +44,13 @@ export const homeData = {
 			tags: ['ResNet-50', 'image classification', 'Workers AI'],
 		},
 		{
+			path: '/ui/retina',
+			name: 'Retinal Receptive Field Lab',
+			description:
+				'Simulate an ON-center/OFF-surround ganglion cell, compare spots, annuli, and edges, and see how center-surround antagonism turns luminance into contrast-sensitive retinal output.',
+			tags: ['retina', 'center-surround', 'interactive'],
+		},
+		{
 			path: '/ui/grid-cell',
 			name: 'Grid Cell Navigator',
 			description:
@@ -57,12 +65,6 @@ export const homeData = {
 			tags: ['reinforcement learning', 'reward prediction', 'interactive'],
 		},
 		{
-			path: '/ui/ask',
-			name: 'Neuro Tutor',
-			description: 'Ask a Socratic neuroscience tutor about action potentials, synapses, memory, plasticity, and more. Powered by Llama 3.1.',
-			tags: ['LLM', 'Socratic method', 'Workers AI'],
-		},
-		{
 			path: '/ui/plasticity',
 			name: 'Synaptic Plasticity',
 			description: 'Simulate spike-timing dependent plasticity (STDP). See how millisecond-precise timing between neurons determines whether synapses strengthen or weaken.',
@@ -74,6 +76,12 @@ export const homeData = {
 			description:
 				'Generate a full 12-lead ECG and tweak heart rate, axis, conduction intervals, ST shift, noise, and rhythm variability to build intuition for waveform morphology.',
 			tags: ['cardiac electrophysiology', '12-lead', 'interactive'],
+		},
+		{
+			path: '/ui/ask',
+			name: 'Neuro Tutor',
+			description: 'Ask a Socratic neuroscience tutor about action potentials, synapses, memory, plasticity, and more. Powered by Llama 3.1.',
+			tags: ['LLM', 'Socratic method', 'Workers AI'],
 		},
 	],
 };

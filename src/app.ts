@@ -4,6 +4,7 @@ import { handleECG } from './routes/ecg.js';
 import { handleGridCell } from './routes/grid-cell.js';
 import { handleNeuron } from './routes/neuron.js';
 import { handlePlasticity } from './routes/plasticity.js';
+import { handleRetina } from './routes/retina.js';
 import { handleVision } from './routes/vision.js';
 import { handleUI } from './ui.js';
 import type { AiClient } from './ai/client.js';
@@ -20,6 +21,8 @@ const ROUTES: Record<string, string> = {
 		'Entorhinal grid-cell simulator with spatial firing fields, navigation path, and rate-map controls. Params: arenaSize, durationSec, speed, spacing, orientation, phaseX, phaseY, sharpness, maxRate, thetaMod, turnNoise',
 	'/dopamine':
 		'Dopamine reward-prediction error simulator. Params: durationMs, dtMs, trialCount, cueTime, rewardTime, rewardSize, learningRate, discount, traceDecay, omissionTrial',
+	'/retina':
+		'Retinal receptive field simulator. Params: gridSize, centerSigma, surroundSigma, surroundStrength, stimulusType, stimulusRadius, annulusWidth, stimulusX, stimulusY, contrast',
 };
 
 export interface AppEnv {
@@ -56,6 +59,8 @@ export async function handleRequest(request: Request, env: AppEnv): Promise<Resp
 			return handleGridCell(request);
 		case '/dopamine':
 			return handleDopamine(request);
+		case '/retina':
+			return handleRetina(request);
 		case '/routes':
 			return new Response(
 				JSON.stringify(
