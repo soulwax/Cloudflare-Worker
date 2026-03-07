@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.14.0] - 2026-03-07
+
+### Added
+
+- Added migrated `Visual Cortex` and `Neuro Tutor` pages to the `web/` App Router frontend track.
+- Added a shared AI metadata layer for `vision` and `ask` so the Worker routes, legacy templates, and migrated frontend all pull from the same typed content source.
+
+### Changed
+
+- Updated the Worker `vision` and `ask` routes to support browser-safe `/api/*` consumption with CORS headers and preflight handling for the migrated frontend.
+- Updated migration docs, environment guidance, and app navigation to reflect that `vision` and `ask` are now part of the Next.js migration path while Cloudflare Workers remains the AI execution boundary.
+
 ## [0.13.0] - 2026-03-06
 
 ### Added

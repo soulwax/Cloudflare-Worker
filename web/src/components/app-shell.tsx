@@ -32,7 +32,8 @@ export function AppShell({
           </Link>
           <p className="mt-2 max-w-[14rem] text-sm leading-6 text-slate-400">
             T3/App Router migration track. React components replace the old
-            string-template UI here.
+            string-template UI while Worker-backed AI pages keep their existing
+            backend boundary.
           </p>
           <div className="mt-4 inline-flex rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] text-cyan-100">
             {migratedCount} migrated modules
@@ -60,7 +61,7 @@ export function AppShell({
             <p className="mt-2 leading-6 text-slate-300/85">
               The backend simulation engines stay in TypeScript. The migration
               target is the UI layer: replace Liquid plus inline scripts with a
-              typed component model.
+              typed component model while preserving the Worker contract.
             </p>
           </div>
         </aside>

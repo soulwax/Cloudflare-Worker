@@ -1,3 +1,5 @@
+import { visionStages as sharedVisionStages } from '../core/vision.js';
+
 export const vision = `
 <h1>Visual Cortex</h1>
 <p class="subtitle">Image classification via ResNet-50, mapped to the ventral visual stream</p>
@@ -75,7 +77,7 @@ async function classify() {
   }, 400);
 
   try {
-    var res = await fetch('/vision?url=' + encodeURIComponent(url));
+    var res = await fetch('/api/vision?url=' + encodeURIComponent(url));
     var data = await res.json();
     clearInterval(interval);
     stages.forEach(function(s) { s.classList.add('active'); });
@@ -117,27 +119,11 @@ async function classify() {
 }
 </script>`;
 
-export const visionStages = [
-	{
-		cortical: 'V1',
-		resnet: 'Conv1',
-		biology: 'Oriented edges, contrast. Hubel & Wiesel (1962) showed V1 neurons fire for specific edge orientations.',
-	},
-	{ cortical: 'V2', resnet: 'Block 1', biology: 'Corners, texture boundaries, illusory contours. V2 neurons detect border ownership.' },
-	{
-		cortical: 'V4',
-		resnet: 'Block 2',
-		biology: 'Color constancy, curvature. Damage to V4 causes achromatopsia (loss of color perception).',
-	},
-	{
-		cortical: 'Post. IT',
-		resnet: 'Block 3',
-		biology: 'Object parts, face components. Posterior IT encodes complex features like eyes, mouths, limbs.',
-	},
-	{ cortical: 'Ant. IT', resnet: 'Block 4', biology: 'Whole objects, view-invariant. The fusiform face area (FFA) is here.' },
-	{
-		cortical: 'PFC',
-		resnet: 'FC Layer',
-		biology: 'Category decision. Prefrontal cortex maps object representations to task-relevant labels.',
-	},
-];
+const SHORT_CORTICAL_LABELS = ['V1', 'V2', 'V4', 'Post. IT', 'Ant. IT', 'PFC'];
+const SHORT_RESNET_LABELS = ['Conv1', 'Block 1', 'Block 2', 'Block 3', 'Block 4', 'FC Layer'];
+
+export const visionStages = sharedVisionStages.map((stage, index) => ({
+	cortical: SHORT_CORTICAL_LABELS[index] ?? stage.corticalArea,
+	resnet: SHORT_RESNET_LABELS[index] ?? stage.resnetStage,
+	biology: stage.biology,
+}));

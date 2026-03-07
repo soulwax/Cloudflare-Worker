@@ -22,8 +22,8 @@ In parallel, there is now a typed React/App Router frontend in `web/` that exist
 Current migration status:
 
 - `web/` is a separate Next.js App Router frontend track.
-- `Brain Atlas`, `Neuron`, `Retina`, `Plasticity`, and `Dopamine` are now migrated pages there.
-- Stable-first rule: deterministic modules move first, while AI stays behind the existing Cloudflare Worker boundary until the frontend pattern is settled.
+- `Brain Atlas`, `Neuron`, `Retina`, `Plasticity`, `Dopamine`, `Vision`, and `Ask` are now migrated pages there.
+- AI-backed pages now migrate through the same frontend track, but Cloudflare Workers remains the execution boundary for `vision` and `ask`.
 - The neuroscience engines and current deployable app remain untouched in the root runtime.
 
 ## Local development
@@ -40,6 +40,9 @@ cd web
 npm install
 npm run dev
 ```
+
+When `web/` runs on a different origin than Wrangler, set `NEXT_PUBLIC_API_BASE_URL`
+in `web/.env` so the migrated `vision` and `ask` pages can call the Worker backend.
 
 ## Cloudflare deploy
 

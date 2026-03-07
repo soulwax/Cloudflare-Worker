@@ -13,12 +13,13 @@ export default function HomePage() {
           Phase 1 Migration
         </p>
         <h1 className="mt-3 max-w-4xl text-4xl font-semibold tracking-tight text-white sm:text-5xl">
-          Neuro Explorer on a typed React/App Router foundation
+          Neuro Explorer on a typed React/App Router shell with Worker-backed AI
         </h1>
         <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-300 sm:text-base">
-          This new frontend track exists to replace the current Liquid plus
-          string-template UI with reusable, typed components. The neuroscience
-          engines stay in TypeScript; the UI moves first.
+          This frontend track replaces Liquid plus string-template pages with
+          reusable typed components. Deterministic modules can run locally in
+          React, while AI-backed pages now call the existing Cloudflare Worker
+          through the canonical <code>/api/*</code> boundary.
         </p>
         <p className="mt-3 text-sm font-medium text-amber-100">
           {migratedCount} modules are now migrated on the stable path.
@@ -31,19 +32,17 @@ export default function HomePage() {
             Open migrated Brain Atlas
           </Link>
           <Link
-            href="/retina"
+            href="/vision"
             className="rounded-full border border-white/10 bg-white/6 px-5 py-3 text-sm font-semibold text-slate-100 transition hover:bg-white/10"
           >
-            Open migrated Retina
+            Open Worker-backed Vision
           </Link>
-          <a
-            href="https://create.t3.gg/en/introduction"
-            target="_blank"
-            rel="noreferrer"
+          <Link
+            href="/ask"
             className="rounded-full border border-white/10 bg-white/6 px-5 py-3 text-sm font-semibold text-slate-100 transition hover:bg-white/10"
           >
-            T3 docs
-          </a>
+            Open Worker-backed Ask
+          </Link>
         </div>
       </section>
 
@@ -93,13 +92,14 @@ export default function HomePage() {
         <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-300">
           This is intentionally not a full Prisma/Auth/tRPC rewrite. The first
           goal is removing the templating bottleneck by moving pages into typed
-          React components. Once more pages exist here, we can decide whether
-          typed RPC adds enough value to justify itself.
+          React components and letting the existing HTTP contract survive the UI
+          cutover.
         </p>
         <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-300">
-          Stable-first also means AI stays behind the existing Cloudflare
-          boundary for now. Deterministic modules migrate first; Workers AI
-          integration comes after the frontend pattern is proven.
+          AI still stays behind the Cloudflare Worker boundary, but it is no
+          longer blocked from migration. `Vision` and `Ask` now prove the
+          pattern: typed App Router pages on top, Worker and Workers AI routes
+          underneath.
         </p>
       </section>
     </div>

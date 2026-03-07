@@ -21,6 +21,8 @@ This `web/` app is the replacement track:
 - `Retinal Receptive Field Lab`
 - `Synaptic Plasticity`
 - `Dopamine Prediction Error Lab`
+- `Visual Cortex` backed by the existing Worker `vision` route
+- `Neuro Tutor` backed by the existing Worker `ask` route
 
 ## Commands
 
@@ -35,4 +37,5 @@ npm run build
 
 - This app is not the production deployment target yet.
 - It was scaffolded with `create-t3-app`, but Prisma/Auth/tRPC are intentionally not part of phase 1.
-- Workers AI is intentionally still treated as an external backend boundary for now. Stable deterministic pages migrate before the AI-backed modules.
+- Workers AI is still treated as the backend boundary even though `vision` and `ask` are now migrated pages here.
+- If `web/` runs on a different origin than the Worker during development, set `NEXT_PUBLIC_API_BASE_URL` in `.env` to the Worker origin (for example `http://127.0.0.1:8787`).

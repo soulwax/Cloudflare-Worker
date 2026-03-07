@@ -29,6 +29,67 @@ describe('Neuro Explorer worker', () => {
 		expect(data.routes['/retina']).toContain('Retinal receptive field simulator');
 	});
 
+	it('serves bootstrap data through the canonical /api/vision alias (integration style)', async () => {
+		const response = await SELF.fetch('https://example.com/api/vision', {
+			headers: {
+				Origin: 'https://web.example',
+			},
+		});
+
+		expect(response.status).toBe(200);
+		expect(response.headers.get('Access-Control-Allow-Origin')).toBe('*');
+		const data = (await response.json()) as {
+			usage: string;
+			ventral_stream: Array<{ corticalArea: string }>;
+			sample_image_url: string;
+		};
+		expect(data.usage).toContain('/api/vision');
+		expect(data.ventral_stream.length).toBe(6);
+		expect(data.ventral_stream[0]?.corticalArea).toContain('V1');
+		expect(data.sample_image_url).toContain('wikimedia.org');
+	});
+
+	it('serves bootstrap data through the canonical /api/ask alias (integration style)', async () => {
+		const response = await SELF.fetch('https://example.com/api/ask', {
+			headers: {
+				Origin: 'https://web.example',
+			},
+		});
+
+		expect(response.status).toBe(200);
+		expect(response.headers.get('Access-Control-Allow-Origin')).toBe('*');
+		const data = (await response.json()) as {
+			usage: string;
+			topic_options: Array<{ id: string }>;
+			example_prompts: Array<{ topic: string }>;
+		};
+		expect(data.usage).toContain('/api/ask');
+		expect(data.topic_options.some((topic) => topic.id === 'visual-system')).toBe(true);
+		expect(data.example_prompts.some((example) => example.topic === 'memory')).toBe(true);
+	});
+
+	it('answers CORS preflight for Worker-backed ask and vision routes (integration style)', async () => {
+		const askResponse = await SELF.fetch('https://example.com/api/ask', {
+			method: 'OPTIONS',
+			headers: {
+				Origin: 'https://web.example',
+				'Access-Control-Request-Method': 'POST',
+			},
+		});
+		expect(askResponse.status).toBe(204);
+		expect(askResponse.headers.get('Access-Control-Allow-Methods')).toContain('POST');
+
+		const visionResponse = await SELF.fetch('https://example.com/api/vision', {
+			method: 'OPTIONS',
+			headers: {
+				Origin: 'https://web.example',
+				'Access-Control-Request-Method': 'GET',
+			},
+		});
+		expect(visionResponse.status).toBe(204);
+		expect(visionResponse.headers.get('Access-Control-Allow-Origin')).toBe('*');
+	});
+
 	it('serves the HTML UI shell at root (integration style)', async () => {
 		const response = await SELF.fetch('https://example.com/');
 		expect(response.status).toBe(200);

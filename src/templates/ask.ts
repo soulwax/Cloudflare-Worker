@@ -1,3 +1,5 @@
+import { askExamplePrompts, askTopicOptions } from '../core/ask.js';
+
 export const ask = `
 <h1>Neuro Tutor</h1>
 <p class="subtitle">Socratic neuroscience tutor powered by Llama 3.1</p>
@@ -58,7 +60,7 @@ async function askTutor() {
   if (topic) params += '&topic=' + encodeURIComponent(topic);
 
   try {
-    var res = await fetch('/ask' + params);
+    var res = await fetch('/api/ask' + params);
     var data = await res.json();
     document.getElementById('answer').textContent = data.answer || JSON.stringify(data, null, 2);
     document.getElementById('answer-box').classList.remove('hidden');
@@ -72,18 +74,6 @@ async function askTutor() {
 </script>`;
 
 export const askData = {
-	topics: [
-		{ id: 'action-potential', label: 'Action Potentials' },
-		{ id: 'synapse', label: 'Synaptic Transmission' },
-		{ id: 'plasticity', label: 'Synaptic Plasticity' },
-		{ id: 'visual-system', label: 'Visual System' },
-		{ id: 'neural-coding', label: 'Neural Coding' },
-		{ id: 'memory', label: 'Memory Systems' },
-	],
-	examples: [
-		{ topic: 'action-potential', topicLabel: 'Action Potentials', question: 'Why is the action potential all-or-nothing?' },
-		{ topic: 'plasticity', topicLabel: 'Plasticity', question: 'How does the NMDA receptor act as a coincidence detector?' },
-		{ topic: 'memory', topicLabel: 'Memory', question: 'What did patient H.M. teach us about memory?' },
-		{ topic: 'visual-system', topicLabel: 'Visual System', question: 'How is a convolutional neural network like the visual cortex?' },
-	],
+	topics: askTopicOptions.map(({ id, label }) => ({ id, label })),
+	examples: askExamplePrompts,
 };

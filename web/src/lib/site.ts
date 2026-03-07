@@ -13,6 +13,8 @@ export const navItems = [
   { href: "/retina", label: "Retina" },
   { href: "/plasticity", label: "Plasticity" },
   { href: "/dopamine", label: "Dopamine" },
+  { href: "/vision", label: "Vision" },
+  { href: "/ask", label: "Ask" },
 ] as const;
 
 export const moduleCards: ModuleCard[] = [
@@ -60,8 +62,17 @@ export const moduleCards: ModuleCard[] = [
     slug: "vision",
     title: "Visual Cortex",
     description:
-      "Still on the legacy runtime for now. This is a good next migration target because it is mostly a data-driven explainer page.",
-    status: "legacy",
+      "Migrated to App Router as a Worker-backed AI page. The typed UI now drives the same Cloudflare Workers AI image-classification route instead of the old template shell.",
+    status: "migrated",
+    href: "/vision",
+  },
+  {
+    slug: "ask",
+    title: "Neuro Tutor",
+    description:
+      "Migrated to App Router as a Worker-backed Socratic tutor. The page now keeps the conversation UI in React while the existing Workers AI endpoint still generates answers.",
+    status: "migrated",
+    href: "/ask",
   },
   {
     slug: "ecg",
