@@ -42,6 +42,7 @@
 		"**/*.tsx",
 		"**/*.cjs",
 		"**/*.js",
+		"../src/core/**/*.ts",
 		".next/types/**/*.ts"
 	],
 	"exclude": [
