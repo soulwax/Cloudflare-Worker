@@ -1,1 +1,1 @@
-export * from '@core/brain-atlas';
+export * from "../../../src/core/brain-atlas";

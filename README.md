@@ -53,13 +53,15 @@ npm run deploy
 
 ## Vercel deploy
 
-1. Import this repository in Vercel.
-2. Set environment variables:
-   - `CLOUDFLARE_ACCOUNT_ID` (or `CF_ACCOUNT_ID`)
-   - `CLOUDFLARE_API_TOKEN` (or `CF_API_TOKEN`)
-3. Deploy.
+There are now two valid Vercel deployment shapes:
 
-`vercel.json` rewrites all public routes to a single function and restores the original pathname so existing route paths (`/`, `/neuron`, `/ask`, etc.) continue to work unchanged.
+1. Legacy backend runtime from the repository root.
+   Set `CLOUDFLARE_ACCOUNT_ID` (or `CF_ACCOUNT_ID`) and `CLOUDFLARE_API_TOKEN` (or `CF_API_TOKEN`).
+   The root [`vercel.json`](vercel.json) rewrites public routes to [`api/index.ts`](api/index.ts), which restores the original pathname for the shared backend app.
+2. Migrated Next.js frontend from `web/`.
+   Set the Vercel project root directory to `web/`.
+   Set `NEURO_API_BASE_URL` to the shared backend origin you want the App Router `/api/*` proxy to call.
+   That backend can be the root Vercel deployment above or the Cloudflare Worker deployment.
 
 ## Type checks and tests
 

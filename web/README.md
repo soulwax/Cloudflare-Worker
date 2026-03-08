@@ -42,6 +42,7 @@ Cloudflare and Vercel.
 ## Notes
 
 - This app now has a Cloudflare Workers deployment path via OpenNext and remains deployable to Vercel as a standard Next.js app.
+- On Vercel, set the project root directory to `web/` and provide `NEURO_API_BASE_URL` so the local `/api/*` proxy can reach the shared backend runtime.
 - It was scaffolded with `create-t3-app`, but Prisma/Auth/tRPC are intentionally not part of phase 1.
 - Workers AI is still treated as the backend boundary even though `vision` and `ask` are now migrated pages here.
 - Prefer `NEURO_API_BASE_URL` in `.env` for backend proxying. `NEXT_PUBLIC_API_BASE_URL` remains available only as a browser-direct fallback.
