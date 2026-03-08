@@ -24,6 +24,7 @@ Current migration status:
 - `web/` is a separate Next.js App Router frontend track.
 - `Brain Atlas`, `Neuron`, `Retina`, `Plasticity`, `Dopamine`, `Vision`, and `Ask` are now migrated pages there.
 - AI-backed pages now migrate through the same frontend track, but Cloudflare Workers remains the execution boundary for `vision` and `ask`.
+- `web/` now has a Cloudflare OpenNext/Wrangler deployment target while still remaining a standard Next.js app for Vercel.
 - The neuroscience engines and current deployable app remain untouched in the root runtime.
 
 ## Local development
@@ -41,8 +42,8 @@ npm install
 npm run dev
 ```
 
-When `web/` runs on a different origin than Wrangler, set `NEXT_PUBLIC_API_BASE_URL`
-in `web/.env` so the migrated `vision` and `ask` pages can call the Worker backend.
+Set `NEURO_API_BASE_URL` in `web/.env` so the App Router `/api/*` proxy can reach
+the shared backend runtime in local dev, Cloudflare deploys, or Vercel deploys.
 
 ## Cloudflare deploy
 
@@ -72,6 +73,8 @@ Additional helper commands for the migration track:
 ```bash
 npm run typecheck:web
 npm run build:web
+npm run preview:web
+npm run deploy:web
 ```
 
 ## Template engine note

@@ -31,11 +31,17 @@ npm install
 npm run dev
 npm run typecheck
 npm run build
+npm run preview:cf
+npm run deploy
 ```
+
+Set `NEURO_API_BASE_URL` so the App Router `/api/*` route handlers can proxy to
+the shared backend runtime. That keeps the migrated frontend same-origin on both
+Cloudflare and Vercel.
 
 ## Notes
 
-- This app is not the production deployment target yet.
+- This app now has a Cloudflare Workers deployment path via OpenNext and remains deployable to Vercel as a standard Next.js app.
 - It was scaffolded with `create-t3-app`, but Prisma/Auth/tRPC are intentionally not part of phase 1.
 - Workers AI is still treated as the backend boundary even though `vision` and `ask` are now migrated pages here.
-- If `web/` runs on a different origin than the Worker during development, set `NEXT_PUBLIC_API_BASE_URL` in `.env` to the Worker origin (for example `http://127.0.0.1:8787`).
+- Prefer `NEURO_API_BASE_URL` in `.env` for backend proxying. `NEXT_PUBLIC_API_BASE_URL` remains available only as a browser-direct fallback.

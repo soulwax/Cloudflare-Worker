@@ -1,13 +1,16 @@
 {
   "name": "neuro-explorer-web",
-  "version": "0.14.0",
+  "version": "0.15.0",
   "private": true,
   "type": "module",
   "scripts": {
     "build": "next build",
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv ./cloudflare-env.d.ts",
     "dev": "next dev --turbo",
+    "deploy": "opennextjs-cloudflare build && wrangler deploy",
     "preview": "next build && next start",
     "start": "next start",
+    "preview:cf": "opennextjs-cloudflare build && wrangler dev",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -18,13 +21,15 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@opennextjs/cloudflare": "^1.8.2",
     "@tailwindcss/postcss": "^4.0.15",
     "@types/node": "^20.14.10",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "postcss": "^8.5.3",
     "tailwindcss": "^4.0.15",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.2",
+    "wrangler": "^4.71.0"
   },
   "ct3aMetadata": {
     "initVersion": "7.40.0"

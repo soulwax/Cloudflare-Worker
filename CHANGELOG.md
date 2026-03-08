@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.15.0] - 2026-03-07
+
+### Added
+
+- Added a Cloudflare OpenNext deployment target for `web/`, including Wrangler config, OpenNext config, and helper scripts for preview, deploy, and type generation.
+- Added a same-origin App Router `/api/*` proxy layer so the migrated Next frontend can reach the shared backend runtime on both Cloudflare and Vercel.
+
+### Changed
+
+- Updated frontend API access to prefer the internal Next proxy, keeping `vision` and `ask` portable across Cloudflare Workers and Vercel.
+- Updated environment and deployment docs to make `NEURO_API_BASE_URL` the recommended backend configuration for the migrated frontend.
+
 ## [0.14.0] - 2026-03-07
 
 ### Added

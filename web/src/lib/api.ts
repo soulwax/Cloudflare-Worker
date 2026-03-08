@@ -1,5 +1,3 @@
-import { env } from "~/env";
-
 type QueryValue = string | number | boolean | null | undefined;
 
 export interface ApiErrorInfo {
@@ -34,14 +32,11 @@ export function buildApiUrl(
   }
 
   const pathname = normalizeApiPath(path);
-  const suffix = searchParams.size > 0 ? `${pathname}?${searchParams}` : pathname;
-  const baseUrl = env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/+$/, "");
-
-  return baseUrl ? `${baseUrl}${suffix}` : suffix;
+  return searchParams.size > 0 ? `${pathname}?${searchParams}` : pathname;
 }
 
 export function describeApiTarget() {
-  return env.NEXT_PUBLIC_API_BASE_URL ?? "same-origin /api";
+  return "same-origin /api proxy";
 }
 
 export function extractApiError(
