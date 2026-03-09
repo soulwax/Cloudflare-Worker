@@ -25,7 +25,7 @@ export const moduleCards: ModuleCard[] = [
     slug: "brain-atlas",
     title: "Brain Atlas",
     description:
-      "Explore major regions, trace interlinked circuits, and work through conference-style localization cases with explicit differential traps.",
+      "Explore major regions, convergence overlays, and conference-style localization cases with vascular, visual-stream, brainstem, and loop-based rival reasoning.",
     badge: "Anatomy",
     href: "/brain-atlas",
   },
@@ -81,7 +81,7 @@ export const moduleCards: ModuleCard[] = [
     slug: "ask",
     title: "Neuro Tutor",
     description:
-      "Interrogate lesion localization, neurovascular syndromes, epileptology, and mechanism with a consult-level AI tutor.",
+      "Use a shared consult-level reasoning rubric across lesion localization, neuro-ophthalmology, epileptology, neurovascular syndromes, and neurocardiology.",
     badge: "Cloudflare AI",
     href: "/ask",
   },
@@ -89,7 +89,7 @@ export const moduleCards: ModuleCard[] = [
     slug: "ecg",
     title: "12-Lead ECG Explorer",
     description:
-      "Study ECGs through a neurocardiac lens with autonomic presets, consult-level read frames, annotated rhythm strips, and a 3D activation map.",
+      "Study ECGs through a neurocritical neurocardiac lens with autonomic presets, consult frames, case mode, annotated rhythm strips, red flags, and a 3D activation map.",
     badge: "Clinical",
     href: "/ecg",
   },

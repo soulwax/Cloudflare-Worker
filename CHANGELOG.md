@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.25.0] - 2026-03-09
+
+### Added
+
+- Added a shared consult-reasoning rubric to `Neuro Tutor`, plus module handoff prompt kits for `retina`, `visual-field`, `vision`, `brain-atlas`, and `ecg`.
+- Added convergence overlays to `Brain Atlas` for vascular territories, visual streams, crossed brainstem logic, and frontostriatal loop reasoning.
+- Added neurocritical `ECG` case mode with SAH, post-ictal, brainstem dysautonomia, and raised-pressure scenarios, plus hemodynamic-risk, monitoring-priority, and red-flag output.
+- Added dedicated teaching-layer tests for `ask`, `brain-atlas`, and `ecg`.
+
+### Changed
+
+- Reframed `Neuro Tutor` as the shared reasoning backbone for the rest of the app rather than a standalone Q&A surface.
+- Reworked `Brain Atlas` so it now functions as the anatomical convergence layer for `retina`, `visual-field`, `vision`, `ecg`, and `ask`.
+- Deepened `ECG` from consult-style waveform reading into neurocritical brain-heart interpretation with explicit rival-frame comparison and reveal logic.
+- Updated curriculum metadata, home-card copy, and API route descriptions to advertise the new post-clinical teaching depth.
+
 ## [0.24.0] - 2026-03-09
 
 ### Added

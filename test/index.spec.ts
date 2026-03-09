@@ -62,12 +62,16 @@ describe('Neuro Explorer API', () => {
 			topic_options: Array<{ id: string }>;
 			level_options: Array<{ id: string }>;
 			example_prompts: Array<{ topic: string; level: string }>;
+			reasoning_rubric: Array<{ id: string }>;
+			prompt_kits: Array<{ moduleSlug: string }>;
 		};
 		expect(data.usage).toContain('/api/ask');
 		expect(data.topic_options.some((topic) => topic.id === 'neurovascular-localization')).toBe(true);
 		expect(data.level_options.some((level) => level.id === 'consult-rounds')).toBe(true);
 		expect(data.example_prompts.some((example) => example.topic === 'epileptology')).toBe(true);
 		expect(data.example_prompts.some((example) => example.level === 'oral-boards')).toBe(true);
+		expect(data.reasoning_rubric.some((criterion) => criterion.id === 'reversal')).toBe(true);
+		expect(data.prompt_kits.some((kit) => kit.moduleSlug === 'ecg')).toBe(true);
 	});
 
 	it('normalizes legacy ask level aliases to the new consult-level vocabulary', async () => {
@@ -86,9 +90,11 @@ describe('Neuro Explorer API', () => {
 		const data = (await response.json()) as {
 			level: string;
 			answer: string;
+			reasoning_rubric: Array<{ id: string }>;
 		};
 		expect(data.level).toBe('consult-rounds');
 		expect(data.answer).toBe('ok');
+		expect(data.reasoning_rubric.some((criterion) => criterion.id === 'next-data')).toBe(true);
 	});
 
 	it('answers CORS preflight for ask and vision routes', async () => {
@@ -199,10 +205,14 @@ describe('Neuro Explorer API', () => {
 				autonomicState: string;
 				vagalTone: number;
 				sympatheticDrive: number;
+				neurocriticalContext: string;
+				hemodynamicRisk: 'low' | 'moderate' | 'high';
 				notes: string[];
 				consultPearls: string[];
 				mimicsToAvoid: string[];
 				nextData: string[];
+				monitoringPriorities: string[];
+				redFlags: string[];
 			};
 		};
 		expect(data.leads.V2!.length).toBeGreaterThan(100);
@@ -219,10 +229,14 @@ describe('Neuro Explorer API', () => {
 		expect(data.neurocardiac.autonomicState.length).toBeGreaterThan(8);
 		expect(data.neurocardiac.vagalTone).toBeGreaterThanOrEqual(0);
 		expect(data.neurocardiac.sympatheticDrive).toBeGreaterThanOrEqual(0);
+		expect(data.neurocardiac.neurocriticalContext.length).toBeGreaterThan(20);
+		expect(['low', 'moderate', 'high']).toContain(data.neurocardiac.hemodynamicRisk);
 		expect(data.neurocardiac.notes.length).toBeGreaterThanOrEqual(3);
 		expect(data.neurocardiac.consultPearls.length).toBeGreaterThanOrEqual(3);
 		expect(data.neurocardiac.mimicsToAvoid.length).toBeGreaterThanOrEqual(2);
 		expect(data.neurocardiac.nextData.length).toBeGreaterThanOrEqual(3);
+		expect(data.neurocardiac.monitoringPriorities.length).toBeGreaterThanOrEqual(3);
+		expect(data.neurocardiac.redFlags.length).toBeGreaterThanOrEqual(2);
 	});
 
 	it('returns brain-atlas regions with interlinked circuits', async () => {
@@ -238,12 +252,15 @@ describe('Neuro Explorer API', () => {
 				chapter1: { functions: string[] };
 				chapter2: { interlinks: Array<{ target: string }> };
 			}>;
+			overlays: Array<{ id: string; compareRegionId: string }>;
 		};
 		expect(data.chapters.map((chapter) => chapter.id)).toEqual(['functions', 'interlinks']);
 		expect(data.regions.length).toBeGreaterThan(8);
 		const thalamus = data.regions.find((region) => region.id === 'thalamus');
 		expect(thalamus?.chapter1.functions.length).toBeGreaterThan(2);
 		expect(thalamus?.chapter2.interlinks.some((link) => link.target === 'prefrontal')).toBe(true);
+		expect(data.overlays.some((overlay) => overlay.id === 'middle-cerebral-territory')).toBe(true);
+		expect(data.overlays.some((overlay) => overlay.compareRegionId === 'temporal')).toBe(true);
 	});
 
 	it('returns 404 for unknown API routes', async () => {

@@ -358,6 +358,9 @@ function buildNeurocardiacSummary(params: ECGParams, qtcBazettMs: number): ECGNe
 	let autonomicState = 'Balanced autonomic expression';
 	let narrative =
 		'Medullary vagal braking and sympathetic drive are close to balance, producing a conventional sinus-like teaching pattern.';
+	let neurocriticalContext =
+		'No dominant neurocritical ECG teaching context is being forced; the strip behaves like a balanced reference state.';
+	let hemodynamicRisk: ECGNeurocardiacSummary['hemodynamicRisk'] = 'low';
 
 	if (vagalTone - sympatheticDrive > 0.18) {
 		autonomicState = 'Vagal-leaning autonomic state';
@@ -367,6 +370,24 @@ function buildNeurocardiacSummary(params: ECGParams, qtcBazettMs: number): ECGNe
 		autonomicState = 'Sympathetic-leaning autonomic state';
 		narrative =
 			'Catecholaminergic drive dominates this pattern, so the sinus node accelerates, the rhythm becomes more metronomic, and repolarization shortens relative to rest.';
+	}
+
+	if (sympatheticDrive > 0.68 && params.heartRate >= 118) {
+		neurocriticalContext =
+			'This behaves like an acute sympathetic storm pattern, as in subarachnoid hemorrhage, post-ictal discharge, or intense central catecholamine spillover.';
+		hemodynamicRisk = 'high';
+	} else if (vagalTone > 0.66 && params.heartRate <= 48) {
+		neurocriticalContext =
+			'This behaves like a pressure-linked vagal crisis pattern, where rising central pressure or brainstem stress slows the sinus node and AV conduction.';
+		hemodynamicRisk = 'high';
+	} else if (respiratoryCoupling > 0.62 && params.rhythmIrregularity > 0.1) {
+		neurocriticalContext =
+			'This behaves like unstable central autonomic modulation, where brainstem state shifts produce visible rhythm lability rather than one fixed conduction defect.';
+		hemodynamicRisk = 'moderate';
+	} else if (respiratoryCoupling < 0.12 && params.rhythmIrregularity < 0.01) {
+		neurocriticalContext =
+			'This behaves like blunted autonomic output, where the expected sinus lability is absent and the strip can look deceptively calm.';
+		hemodynamicRisk = 'moderate';
 	}
 
 	const notes = [
@@ -416,17 +437,42 @@ function buildNeurocardiacSummary(params: ECGParams, qtcBazettMs: number): ECGNe
 			: 'Use interval behavior plus bedside state, not rate alone, to decide whether the pattern is compensatory or pathological.',
 	];
 
+	const monitoringPriorities = [
+		hemodynamicRisk === 'high'
+			? 'Trend ECG, hemodynamics, and neurological status together rather than in separate silos.'
+			: 'Keep bedside autonomic context tied to the strip instead of reading the tracing in isolation.',
+		sympatheticDrive > 0.62
+			? 'Watch for evolving repolarization change or biomarker drift before declaring primary coronary pathology.'
+			: 'Track whether expected autonomic variability returns as the clinical state stabilizes.',
+		vagalTone > 0.62
+			? 'Monitor for worsening bradycardia, AV delay, or pressure-linked neurological deterioration.'
+			: 'Monitor interval behavior and sinus variability rather than rate alone.',
+	];
+
+	const redFlags = [
+		hemodynamicRisk === 'high'
+			? 'The strip is sitting in a high-risk neurocritical teaching zone; bedside deterioration should outrank waveform familiarity.'
+			: 'A comfortable-looking strip can still be pathologic if the autonomic physiology is blunted or mismatched to the context.',
+		params.heartRate <= 42
+			? 'Profound bradycardia in a deteriorating neurological context is a warning sign, not a reassurance.'
+			: 'Rapid adrenergic patterns need serial follow-up before they are reduced to one static label.',
+	];
+
 	return {
 		autonomicState,
 		vagalTone: round(vagalTone, 3),
 		sympatheticDrive: round(sympatheticDrive, 3),
 		respiratoryCoupling: round(respiratoryCoupling, 3),
 		avNodalBrake: round(avNodalBrake, 3),
+		neurocriticalContext,
+		hemodynamicRisk,
 		narrative,
 		notes,
 		consultPearls,
 		mimicsToAvoid,
 		nextData,
+		monitoringPriorities,
+		redFlags,
 	};
 }
 

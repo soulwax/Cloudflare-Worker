@@ -5,6 +5,8 @@ import {
 	buildAskSystemPrompt,
 	normalizeAskLevel,
 	askExamplePrompts,
+	askPromptKits,
+	askReasoningRubric,
 	askTopicContext,
 	askLevelOptions,
 	askTopicOptions,
@@ -57,6 +59,8 @@ export async function handleAsk(request: Request, ai: AiClient): Promise<Respons
 			topic_options: askTopicOptions,
 			levels: askAvailableLevels,
 			level_options: askLevelOptions,
+			reasoning_rubric: askReasoningRubric,
+			prompt_kits: askPromptKits,
 			examples: askExamplePrompts.map(
 				(example) =>
 					`/api/ask?q=${encodeURIComponent(example.question)}&topic=${encodeURIComponent(example.topic)}&level=${encodeURIComponent(example.level)}`
@@ -82,6 +86,7 @@ export async function handleAsk(request: Request, ai: AiClient): Promise<Respons
 			level: selectedLevel,
 			question,
 			answer,
+			reasoning_rubric: askReasoningRubric,
 		});
 	} catch (error) {
 		const message = error instanceof Error ? error.message : 'Unknown AI error';

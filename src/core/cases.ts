@@ -34,3 +34,8 @@ export interface VisionLocalizationCase extends InstructionCase {
   expectedPresetId: string;
   startingPresetId: string;
 }
+
+export interface ECGClinicalCase extends InstructionCase {
+  expectedConsultFrameId: string;
+  startingConsultFrameId: string;
+}

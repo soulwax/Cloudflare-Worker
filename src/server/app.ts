@@ -14,12 +14,13 @@ const ROUTES: Record<string, string> = {
 		'Leaky Integrate-and-Fire neuron simulation. Params: tau, threshold, inputCurrent, duration, restingPotential, resetPotential, refractoryPeriod, dt',
 	'/vision':
 		'Image classification via ResNet-50, mapped to cortical visual processing and used alongside consult-level field-entry, ventral-stream, dorsal-stream, and attention-network teaching. Param: url=<image_url>',
-	'/brain-atlas': 'Interactive brain atlas with Chapter 1 on regional functions and Chapter 2 on interlinked circuits.',
+	'/brain-atlas':
+		'Interactive brain atlas with Chapter 1 on regional functions, Chapter 2 on interlinked circuits, and convergence overlays for vascular, visual-system, brainstem, and loop reasoning.',
 	'/ask':
-		'Post-clinical neuroscience and clinical neurology tutor. Params: q=<question>, topic=<optional_topic>, level=<post-clinical|oral-boards|consult-rounds>',
+		'Post-clinical neuroscience and clinical neurology tutor with a shared consult-reasoning rubric. Params: q=<question>, topic=<optional_topic>, level=<post-clinical|oral-boards|consult-rounds>',
 	'/plasticity': 'Spike-Timing Dependent Plasticity (STDP) simulation. Params: deltaT, pairCount, aPlus, aMinus, tauPlus, tauMinus, initialWeight',
 	'/ecg':
-		'12-lead neurocardiac ECG lab with autonomic-tone presets, consult-level teaching frames, conduction timing, rhythm-strip landmarks, and 3D activation-vector data.',
+		'12-lead neurocardiac ECG lab with autonomic-tone presets, neurocritical consult frames, case mode, conduction timing, rhythm-strip landmarks, and 3D activation-vector data.',
 	'/grid-cell':
 		'Entorhinal grid-cell simulator with spatial firing fields, navigation path, and rate-map controls. Params: arenaSize, durationSec, speed, spacing, orientation, phaseX, phaseY, sharpness, maxRate, thetaMod, turnNoise',
 	'/dopamine':

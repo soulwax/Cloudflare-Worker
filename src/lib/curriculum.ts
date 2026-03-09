@@ -13,17 +13,17 @@ export const curriculumModules: CurriculumModule[] = [
   {
     slug: "brain-atlas",
     title: "Brain Atlas",
-    trainingStage: "Post-clinical localization",
+    trainingStage: "Post-clinical anatomical convergence",
     learningGoals: [
       "Localize neurological syndromes to major brain systems",
-      "Understand why loops matter more than isolated structures",
+      "Understand why loops and distributed systems matter more than isolated structures",
     ],
     advancedObjectives: [
-      "Separate cortical, subcortical, cerebellar, and brainstem patterns before naming a disease.",
-      "Reject weaker competing localizations using exam asymmetry, cortical signs, and network logic.",
+      "Separate vascular-territory, visual-stream, loop, and brainstem long-tract explanations before naming a disease.",
+      "Reject weaker competing localizations using exam asymmetry, cortical signs, negative findings, and network logic.",
     ],
     prerequisites: ["Basic neuroanatomy"],
-    linkedModules: ["vision", "dopamine", "ask"],
+    linkedModules: ["retina", "visual-field", "vision", "dopamine", "ecg", "ask"],
     commonMisconceptions: [
       "One symptom always equals one structure.",
       "Naming a vascular territory is the same as proving the localization.",
@@ -149,17 +149,17 @@ export const curriculumModules: CurriculumModule[] = [
   {
     slug: "ask",
     title: "Neuro Tutor",
-    trainingStage: "Consult-service oral reasoning",
+    trainingStage: "Cross-module consult reasoning rubric",
     learningGoals: [
-      "Practice verbal reasoning and explanation",
-      "Strengthen mechanism-based clinical thinking",
+      "Practice verbal reasoning and explanation across the whole app",
+      "Strengthen mechanism-based clinical thinking with explicit reversal logic",
     ],
     advancedObjectives: [
-      "Move from bedside phenotype to localization, mechanism, and differential without collapsing the steps.",
-      "Practice case-conference style reasoning with explicit rejection of weaker alternatives.",
+      "Move from bedside phenotype to syndrome, localization hierarchy, mechanism, competing alternative, and decisive next data without collapsing the steps.",
+      "Practice case-conference style reasoning with explicit rejection of weaker alternatives and a concrete statement of what would change your mind.",
     ],
     prerequisites: [],
-    linkedModules: ["brain-atlas", "vision", "dopamine"],
+    linkedModules: ["retina", "visual-field", "vision", "brain-atlas", "ecg", "dopamine"],
     commonMisconceptions: [
       "Fluent explanation equals correct localization.",
       "A single buzzword proves understanding.",
@@ -168,17 +168,18 @@ export const curriculumModules: CurriculumModule[] = [
   {
     slug: "ecg",
     title: "12-Lead ECG Explorer",
-    trainingStage: "Consult-level neurocardiac interpretation",
+    trainingStage: "Neurocritical brain-heart interpretation",
     learningGoals: [
       "Relate autonomic tone to surface rhythm changes",
       "Interpret ECGs through a brain-heart physiology lens",
+      "Recognize when the strip is expressing central autonomic injury rather than primary cardiac disease",
     ],
     advancedObjectives: [
       "Separate primary conduction disease from centrally mediated autonomic modulation.",
-      "Relate neurogenic sympathetic surge, vagal braking, and blunted autonomic modulation to ECG pattern shifts without overcalling ischemia or fixed conduction disease.",
+      "Relate neurogenic sympathetic surge, vagal braking, brainstem dysautonomia, and pressure-linked crisis states to ECG pattern shifts without overcalling ischemia or fixed conduction disease.",
     ],
     prerequisites: ["Basic cardiac conduction"],
-    linkedModules: ["neuron", "ask"],
+    linkedModules: ["brain-atlas", "neuron", "ask"],
     commonMisconceptions: [
       "All rhythm changes are primary cardiac pathology.",
       "Autonomic effects are invisible on the ECG.",

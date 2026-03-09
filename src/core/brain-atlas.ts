@@ -1,5 +1,6 @@
 export type AtlasChapterId = 'functions' | 'interlinks';
 export type AtlasCategoryId = 'cortex' | 'limbic' | 'subcortical' | 'hindbrain';
+export type AtlasOverlayCategoryId = 'vascular' | 'visual-system' | 'brainstem' | 'loop';
 
 export interface AtlasChapter {
 	id: AtlasChapterId;
@@ -45,7 +46,29 @@ export interface AtlasResult {
 	chapters: AtlasChapter[];
 	categories: AtlasCategory[];
 	regions: AtlasRegion[];
+	overlays: AtlasOverlay[];
 	networkNotes: string[];
+}
+
+export interface AtlasOverlayRegion {
+	regionId: string;
+	emphasis: 'primary' | 'supporting';
+	label: string;
+	reason: string;
+}
+
+export interface AtlasOverlay {
+	id: string;
+	category: AtlasOverlayCategoryId;
+	title: string;
+	summary: string;
+	clinicalFrame: string;
+	weakerAlternative: string;
+	whyAlternativeWeaker: string;
+	decisiveNextData: string[];
+	compareRegionId: string;
+	linkedModules: string[];
+	regions: AtlasOverlayRegion[];
 }
 
 export const atlasChapters: AtlasChapter[] = [
@@ -542,6 +565,155 @@ export const atlasRegions: AtlasRegion[] = [
 	},
 ];
 
+export const atlasOverlays: AtlasOverlay[] = [
+	{
+		id: 'middle-cerebral-territory',
+		category: 'vascular',
+		title: 'Middle cerebral territory emphasis',
+		summary:
+			'Use this overlay when aphasia, neglect, gaze deviation, and face-arm predominant deficits travel together and the cortical syndrome feels lateral rather than medial.',
+		clinicalFrame:
+			'The most localizing clue is not the infarct name but the cortical package: gaze, language, neglect, face-arm sensorimotor signs, and field involvement clustering in one lateral hemispheric distribution.',
+		weakerAlternative: 'Deep lacunar or isolated thalamic process',
+		whyAlternativeWeaker:
+			'Lacunar and deep lesions can create pure motor or sensory syndromes, but they do not usually assemble the full cortical package of gaze, language, neglect, and field phenomena.',
+		decisiveNextData: [
+			'Language screen, neglect testing, and gaze preference at the bedside',
+			'Vascular imaging that distinguishes large-vessel cortical involvement from a deep perforator pattern',
+		],
+		compareRegionId: 'thalamus',
+		linkedModules: ['visual-field', 'vision', 'ask'],
+		regions: [
+			{ regionId: 'prefrontal', emphasis: 'primary', label: 'Frontal eye and executive signs', reason: 'Explains gaze preference and executive collapse in large lateral hemispheric syndromes.' },
+			{ regionId: 'motor', emphasis: 'primary', label: 'Face-arm motor output', reason: 'Captures the classic lateral sensorimotor bias.' },
+			{ regionId: 'somatosensory', emphasis: 'supporting', label: 'Face-arm sensory integration', reason: 'Adds cortical sensory and neglect-adjacent findings.' },
+			{ regionId: 'temporal', emphasis: 'primary', label: 'Language and semantic cortex', reason: 'Explains dominant-hemisphere aphasic patterns.' },
+			{ regionId: 'occipital', emphasis: 'supporting', label: 'Field-cut neighborhood', reason: 'Posterior extension helps explain homonymous visual loss when present.' },
+		],
+	},
+	{
+		id: 'posterior-cerebral-territory',
+		category: 'vascular',
+		title: 'Posterior cerebral territory emphasis',
+		summary:
+			'Use this overlay when the syndrome is visual, mnemonic, or thalamic rather than frontolateral cortical, especially when a homonymous field cut travels with memory or higher-order visual complaints.',
+		clinicalFrame:
+			'Posterior territory reasoning is strongest when occipital field loss, ventral-stream symptoms, hippocampal memory vulnerability, or deep posterior thalamic features cluster together.',
+		weakerAlternative: 'Anterior circulation frontal syndrome',
+		whyAlternativeWeaker:
+			'Anterior circulation syndromes lead with gaze, motor output, and executive-language dominance, whereas posterior territory syndromes are more visual, mnemonic, and posterior-thalamic.',
+		decisiveNextData: [
+			'Formal perimetry and posterior cortical visual testing',
+			'Memory testing and posterior vascular imaging rather than only anterior circulation assumptions',
+		],
+		compareRegionId: 'prefrontal',
+		linkedModules: ['retina', 'visual-field', 'vision', 'ask'],
+		regions: [
+			{ regionId: 'occipital', emphasis: 'primary', label: 'Retinotopic posterior cortex', reason: 'Explains homonymous field deficits and posterior cortical visual syndromes.' },
+			{ regionId: 'temporal', emphasis: 'supporting', label: 'Ventral stream and semantic reach', reason: 'Captures visual recognition and higher-order perceptual consequences.' },
+			{ regionId: 'hippocampus', emphasis: 'primary', label: 'Medial temporal memory system', reason: 'Accounts for posterior circulation memory phenotypes.' },
+			{ regionId: 'thalamus', emphasis: 'supporting', label: 'Posterior relay hub', reason: 'Adds deep sensory and arousal consequences that often travel with posterior syndromes.' },
+		],
+	},
+	{
+		id: 'ventral-visual-stream',
+		category: 'visual-system',
+		title: 'Ventral visual stream',
+		summary:
+			'This overlay turns retina and field entry into object identity, color stability, and high-order recognition rather than stopping at V1.',
+		clinicalFrame:
+			'Use this when the patient can see enough to navigate or describe a stimulus, but identity, category, color, or semantic visual meaning starts to fail.',
+		weakerAlternative: 'Pure dorsal visuospatial or attention-network syndrome',
+		whyAlternativeWeaker:
+			'Dorsal and attention syndromes distort action guidance or awareness weighting more than identity and category-specific recognition.',
+		decisiveNextData: [
+			'Compare face, object, word, scene, and color performance rather than using one generic visual complaint',
+			'Look for preserved reaching or scene scanning to keep dorsal explanations in their place',
+		],
+		compareRegionId: 'somatosensory',
+		linkedModules: ['retina', 'visual-field', 'vision', 'ask'],
+		regions: [
+			{ regionId: 'occipital', emphasis: 'primary', label: 'Early visual entry', reason: 'Retinotopic input and early feature extraction begin the stream.' },
+			{ regionId: 'temporal', emphasis: 'primary', label: 'Identity and semantic visual cortex', reason: 'Higher-order object and face recognition stabilize here.' },
+			{ regionId: 'thalamus', emphasis: 'supporting', label: 'LGN relay support', reason: 'The stream depends on structured thalamocortical visual entry before cortical specialization.' },
+			{ regionId: 'prefrontal', emphasis: 'supporting', label: 'Decision and report layer', reason: 'Percepts are turned into task-relevant recognition and verbal report.' },
+		],
+	},
+	{
+		id: 'dorsal-vision-attention',
+		category: 'visual-system',
+		title: 'Dorsal visual-attention stream',
+		summary:
+			'This overlay links occipital visual space to parietal body-space coordinates, action guidance, and top-down attentional weighting.',
+		clinicalFrame:
+			'Use this when the syndrome is about reaching, scanning, scene integration, neglect, or spatial weighting rather than object identity itself.',
+		weakerAlternative: 'Pure ventral object-recognition syndrome',
+		whyAlternativeWeaker:
+			'Ventral lesions can leave reaching and scene weighting relatively intact, while dorsal and attention lesions fail at action guidance and hemispace representation.',
+		decisiveNextData: [
+			'Compare object recognition with visually guided reaching and scene integration',
+			'Use cancellation, line bisection, and extinction to separate neglect from field loss',
+		],
+		compareRegionId: 'temporal',
+		linkedModules: ['visual-field', 'vision', 'brain-atlas', 'ask'],
+		regions: [
+			{ regionId: 'occipital', emphasis: 'primary', label: 'Visual-space entry', reason: 'Early visual encoding still anchors the spatial map.' },
+			{ regionId: 'somatosensory', emphasis: 'primary', label: 'Body-space alignment', reason: 'Parietal body coordinates and dorsal space merge here.' },
+			{ regionId: 'prefrontal', emphasis: 'supporting', label: 'Top-down attentional biasing', reason: 'Executive control reshapes which spatial signals reach awareness.' },
+			{ regionId: 'motor', emphasis: 'supporting', label: 'Vision for action', reason: 'Spatial coordinates become goal-directed movement plans.' },
+		],
+	},
+	{
+		id: 'brainstem-crossed-tracts',
+		category: 'brainstem',
+		title: 'Crossed brainstem long-tract logic',
+		summary:
+			'This overlay exists for compact syndromes where cranial-nerve territory, cerebellar connections, ascending sensory tracts, and descending motor/autonomic pathways all live in the same lesion neighborhood.',
+		clinicalFrame:
+			'Use this when the syndrome contains crossed findings, bulbar signs, arousal or autonomic disturbance, and cerebellar imbalance in one compact package.',
+		weakerAlternative: 'Single cortical map lesion',
+		whyAlternativeWeaker:
+			'Hemispheric cortical lesions do not usually produce the dense cranial-nerve plus contralateral long-tract mixture seen in compact brainstem syndromes.',
+		decisiveNextData: [
+			'Focused cranial-nerve and long-tract exam to confirm the crossed pattern',
+			'Posterior circulation imaging that captures the medulla, pons, and cerebellar connections',
+		],
+		compareRegionId: 'cerebellum',
+		linkedModules: ['ecg', 'vision', 'ask'],
+		regions: [
+			{ regionId: 'brainstem', emphasis: 'primary', label: 'Compact cranial and autonomic hub', reason: 'Explains crossed findings, bulbar symptoms, and state/autonomic consequences.' },
+			{ regionId: 'cerebellum', emphasis: 'supporting', label: 'Posterior fossa coordination neighbor', reason: 'Accounts for ipsilateral ataxia and vestibulocerebellar spillover.' },
+			{ regionId: 'motor', emphasis: 'supporting', label: 'Descending long-tract consequence', reason: 'Pyramidal and posture-related output can be captured as tract involvement.' },
+			{ regionId: 'somatosensory', emphasis: 'supporting', label: 'Ascending sensory tract consequence', reason: 'Pain-temperature and body-space deficits travel through the same compact neighborhood.' },
+			{ regionId: 'thalamus', emphasis: 'supporting', label: 'Ascending arousal relay', reason: 'Rostral state disruption can be understood as extension into deep relay systems.' },
+		],
+	},
+	{
+		id: 'frontostriatal-loop',
+		category: 'loop',
+		title: 'Frontostriatal gating loop',
+		summary:
+			'This overlay is the convergence layer for executive control, action selection, movement vigor, and habit gating rather than a single one-way pathway.',
+		clinicalFrame:
+			'Use this when dysexecutive syndrome, bradykinesia, or impaired internal action release suggests a loop disorder more than an isolated cortical output lesion.',
+		weakerAlternative: 'Pure corticospinal weakness',
+		whyAlternativeWeaker:
+			'Loop disorders distort initiation, selection, scaling, and control even when raw corticospinal output is relatively intact.',
+		decisiveNextData: [
+			'Compare internally generated versus externally cued actions',
+			'Look for executive and reward-gating signs that travel with the movement problem',
+		],
+		compareRegionId: 'motor',
+		linkedModules: ['dopamine', 'ecg', 'ask'],
+		regions: [
+			{ regionId: 'prefrontal', emphasis: 'primary', label: 'Executive set and goal selection', reason: 'Control signals define what should be gated into action.' },
+			{ regionId: 'basalGanglia', emphasis: 'primary', label: 'Action gating core', reason: 'Competing motor and cognitive programs are released or suppressed here.' },
+			{ regionId: 'thalamus', emphasis: 'supporting', label: 'Loop return relay', reason: 'Selected signals re-enter cortex through thalamic relay.' },
+			{ regionId: 'motor', emphasis: 'supporting', label: 'Final motor expression', reason: 'The output looks weak only if you forget the upstream gating layer.' },
+		],
+	},
+];
+
 export const atlasNetworkNotes = [
 	'Most brain communication is recurrent rather than one-way: cortex sends down, subcortex sends back, and both reshape each other.',
 	'Hub regions such as the thalamus and prefrontal cortex matter because they coordinate timing and routing, not because they work alone.',
@@ -550,12 +722,17 @@ export const atlasNetworkNotes = [
 
 export const atlasTitle = 'Brain Atlas';
 
+export function getAtlasOverlay(overlayId: string) {
+	return atlasOverlays.find((overlay) => overlay.id === overlayId);
+}
+
 export function createBrainAtlasResult(): AtlasResult {
 	return {
 		title: atlasTitle,
 		chapters: atlasChapters,
 		categories: atlasCategories,
 		regions: atlasRegions,
+		overlays: atlasOverlays,
 		networkNotes: atlasNetworkNotes,
 	};
 }

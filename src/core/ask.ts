@@ -23,6 +23,26 @@ export interface AskExamplePrompt {
   levelLabel: string;
 }
 
+export interface AskRubricCriterion {
+  id: string;
+  label: string;
+  description: string;
+  signals: string[];
+}
+
+export interface AskPromptKit {
+  id: string;
+  moduleSlug: string;
+  moduleTitle: string;
+  title: string;
+  topic: string;
+  topicLabel: string;
+  question: string;
+  level: AskLevelId;
+  levelLabel: string;
+  whyUse: string;
+}
+
 const askBaseSystemPrompt = `You are a neuroscience and clinical neurology tutor for post-clinical learners: residents, fellows, and supervising clinicians using the tool for teaching.
 
 Core stance:
@@ -33,6 +53,7 @@ Core stance:
 - Connect every explanation to what the learner would expect on examination, imaging, electrophysiology, pathology, or formal testing
 - When discussing disease, separate syndrome localization from lesion etiology and from definitive diagnosis
 - Explicitly note what additional data would most efficiently sharpen or overturn the current localization
+- State what single finding would most change your mind if the current localization is wrong
 - Cite canonical experiments, landmark cases, or major researchers when relevant
 - Keep answers dense and teachable; default to about 300-500 words unless the learner asks for more depth
 - Stay in educational mode, not patient-specific treatment mode
@@ -43,7 +64,10 @@ Preferred answer structure:
 3. Key mechanism or circuit logic
 4. Strongest competing localization and why it is weaker
 5. Highest-yield next data point
-6. One teaching pearl or pitfall`;
+6. What would most change my mind
+7. One teaching pearl or pitfall
+
+Use short section headers when practical so the learner can grade the reasoning step by step.`;
 
 const askLevelGuidance: Record<AskLevelId, string> = {
   "post-clinical": `Current mode: Post-clinical.
@@ -286,6 +310,75 @@ export const askLevelOptions: AskLevelOption[] = [
   },
 ];
 
+export const askReasoningRubric: AskRubricCriterion[] = [
+  {
+    id: "syndrome",
+    label: "Syndrome formulation",
+    description:
+      "Name the bedside pattern before jumping to a lesion label or etiology.",
+    signals: [
+      "What exactly is failing",
+      "What is preserved",
+      "Whether the complaint is cortical, subcortical, peripheral, or network-level",
+    ],
+  },
+  {
+    id: "hierarchy",
+    label: "Localization hierarchy",
+    description:
+      "Rank the strongest anatomical levels instead of pretending the first idea is final.",
+    signals: [
+      "Best-fit level first",
+      "Why deeper or more lateral alternatives are weaker",
+      "Loop versus output failure when relevant",
+    ],
+  },
+  {
+    id: "mechanism",
+    label: "Mechanism and circuit logic",
+    description:
+      "Tie the syndrome to a tract, loop, relay, or physiological mechanism rather than to a memorized buzzword.",
+    signals: [
+      "Named tract or circuit",
+      "Why the signs fit that circuit",
+      "How physiology produces the bedside pattern",
+    ],
+  },
+  {
+    id: "alternative",
+    label: "Competing alternative",
+    description:
+      "Make the best rival explanation explicit and explain why it loses.",
+    signals: [
+      "A serious alternative, not a straw man",
+      "Decisive mismatch with the observed signs",
+      "Use of negative findings",
+    ],
+  },
+  {
+    id: "next-data",
+    label: "Highest-yield next data",
+    description:
+      "Ask for the one test, exam maneuver, or temporal clue that most efficiently re-ranks the case.",
+    signals: [
+      "One decisive next step",
+      "Why it matters",
+      "How it would change the differential",
+    ],
+  },
+  {
+    id: "reversal",
+    label: "What would change my mind",
+    description:
+      "State the single finding that would force a different localization or mechanism.",
+    signals: [
+      "A concrete disconfirming finding",
+      "A new localization if that finding appears",
+      "Humility about uncertainty without becoming vague",
+    ],
+  },
+];
+
 export const askExamplePrompts: AskExamplePrompt[] = [
   {
     topic: "neurovascular-localization",
@@ -326,6 +419,79 @@ export const askExamplePrompts: AskExamplePrompt[] = [
     levelLabel: "Consult rounds",
     question:
       "How can acute sympathetic surge after subarachnoid hemorrhage distort ECG interpretation without primary ischemic heart disease, and what findings would keep you from overcalling ACS?",
+  },
+];
+
+export const askPromptKits: AskPromptKit[] = [
+  {
+    id: "retina-triage",
+    moduleSlug: "retina",
+    moduleTitle: "Retina",
+    title: "Retinal versus optic-nerve triage",
+    topic: "neuro-ophthalmology",
+    topicLabel: "Neuro-ophthalmology",
+    level: "consult-rounds",
+    levelLabel: "Consult rounds",
+    question:
+      "A patient has painful monocular central blur, red desaturation, and an afferent defect. Walk from syndrome to localization, strongest alternative, and the one finding that would push this away from optic neuritis toward a macular process.",
+    whyUse:
+      "Use this after Retina when you want the tutor to grade prechiasmal reasoning rather than just repeat visual-field facts.",
+  },
+  {
+    id: "visual-field-ranking",
+    moduleSlug: "visual-field",
+    moduleTitle: "Visual Field Localizer",
+    title: "Field geometry to lesion depth",
+    topic: "neuro-ophthalmology",
+    topicLabel: "Neuro-ophthalmology",
+    level: "oral-boards",
+    levelLabel: "Oral boards",
+    question:
+      "A patient has a congruous left homonymous hemianopia with relative macular sparing. Rank the retrochiasmal localization hierarchy and state what one bedside or formal-field clue would most strongly move the lesion anteriorly instead.",
+    whyUse:
+      "Use this after Visual Field when you want crisp posterior-versus-anterior retrochiasmal reasoning.",
+  },
+  {
+    id: "vision-streams",
+    moduleSlug: "vision",
+    moduleTitle: "Visual Cortex",
+    title: "Ventral versus dorsal versus attention",
+    topic: "visual-system",
+    topicLabel: "Visual System",
+    level: "consult-rounds",
+    levelLabel: "Consult rounds",
+    question:
+      "How do you separate prosopagnosia, optic ataxia, and right-parietal neglect by syndrome grammar, strongest localization, and the single finding that would most change your mind in each case?",
+    whyUse:
+      "Use this after Vision when you want the tutor to enforce cortical-stream reasoning instead of generic visual-neurology prose.",
+  },
+  {
+    id: "atlas-convergence",
+    moduleSlug: "brain-atlas",
+    moduleTitle: "Brain Atlas",
+    title: "Convergence on anatomy",
+    topic: "lesion-localization",
+    topicLabel: "Lesion Localization",
+    level: "consult-rounds",
+    levelLabel: "Consult rounds",
+    question:
+      "A patient has left neglect, extinction, and impaired scene integration but intact primary strength. Build the syndrome, localize it anatomically, explain why occipital cortex is weaker, and name the one finding that would force you toward a field-cut explanation instead.",
+    whyUse:
+      "Use this after Brain Atlas when you want the tutor to connect bedside signs back into network anatomy.",
+  },
+  {
+    id: "ecg-neurocritical",
+    moduleSlug: "ecg",
+    moduleTitle: "ECG",
+    title: "Neurocritical ECG interpretation",
+    topic: "autonomic-neurocardiology",
+    topicLabel: "Autonomic Neurocardiology",
+    level: "consult-rounds",
+    levelLabel: "Consult rounds",
+    question:
+      "An ECG after acute subarachnoid hemorrhage shows tachycardia, repolarization distortion, and reduced sinus variability. Explain the strongest neurocardiac mechanism, the best cardiac alternative, and what serial data would most change your mind.",
+    whyUse:
+      "Use this after ECG when you want the tutor to apply the same localization-and-reversal logic to autonomic neurocardiology.",
   },
 ];
 

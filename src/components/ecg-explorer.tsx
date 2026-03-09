@@ -1,7 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { CaseQuestionPanel } from "~/components/case-question-panel";
+import { CaseShell } from "~/components/case-shell";
 import { CompareShell } from "~/components/compare-shell";
+import { RevealPanel } from "~/components/reveal-panel";
+import { ecgCases } from "~/core/cases/ecg";
 import {
   buildApiUrl,
   describeApiTarget,
@@ -20,6 +24,7 @@ import {
   type ECGParams,
   type ECGResult,
 } from "~/lib/ecg";
+import { getCurriculumModule } from "~/lib/curriculum";
 
 const LEAD_WIDTH = 280;
 const LEAD_HEIGHT = 118;
@@ -441,6 +446,7 @@ function AutonomicMap({ result }: Readonly<{ result: ECGResult }>) {
 }
 
 export function ECGExplorer() {
+  const ecgCurriculum = getCurriculumModule("ecg");
   const [params, setParams] = useState<ECGParams>(defaultEcgParams);
   const [result, setResult] = useState<ECGResult | null>(null);
   const [error, setError] = useState<ApiErrorInfo | null>(null);
@@ -450,6 +456,11 @@ export function ECGExplorer() {
     useState<string>(DEFAULT_PRESET_ID);
   const [selectedConsultFrameId, setSelectedConsultFrameId] =
     useState<string>(DEFAULT_CONSULT_FRAME_ID);
+  const [caseId, setCaseId] = useState<string>(ecgCases[0]!.id);
+  const [caseConsultFrameId, setCaseConsultFrameId] = useState<string>(
+    ecgCases[0]!.startingConsultFrameId,
+  );
+  const [revealedCase, setRevealedCase] = useState(false);
   const [display, setDisplay] =
     useState<DisplayOptions>(defaultDisplayOptions);
 
@@ -554,6 +565,22 @@ export function ECGExplorer() {
     applyPreset(frame.linkedPresetId);
   }
 
+  function applyCaseConsultFrame(frameId: string) {
+    setCaseConsultFrameId(frameId);
+    applyConsultFrame(frameId);
+  }
+
+  function selectCase(nextCaseId: string) {
+    const nextCase = ecgCases.find((item) => item.id === nextCaseId);
+    if (!nextCase) {
+      return;
+    }
+
+    setCaseId(nextCase.id);
+    setRevealedCase(false);
+    applyCaseConsultFrame(nextCase.startingConsultFrameId);
+  }
+
   const activeFrame = result?.activation.frames[frameIndex] ?? null;
   const activationFrames = result?.activation.frames ?? [];
   const leadAxes = result?.activation.leadAxes ?? [];
@@ -573,6 +600,18 @@ export function ECGExplorer() {
   const activeConsultFrame =
     ecgConsultFrames.find((item) => item.id === selectedConsultFrameId) ??
     ecgConsultFrames[0]!;
+  const activeCase =
+    ecgCases.find((item) => item.id === caseId) ?? ecgCases[0]!;
+  const caseConsultFrame =
+    ecgConsultFrames.find((item) => item.id === caseConsultFrameId) ??
+    ecgConsultFrames[0]!;
+  const targetCaseConsultFrame =
+    ecgConsultFrames.find((item) => item.id === activeCase.expectedConsultFrameId) ??
+    ecgConsultFrames[0]!;
+  const caseMatches = caseConsultFrame.id === targetCaseConsultFrame.id;
+  const ecgFollowUpTitles = activeCase.followUpModules.map(
+    (slug) => getCurriculumModule(slug)?.title ?? slug,
+  );
 
   return (
     <div className="space-y-6">
@@ -858,6 +897,171 @@ export function ECGExplorer() {
           />
         </div>
       </section>
+
+      <CaseShell
+        eyebrow="Case Mode"
+        title="Practice neurocardiac consult framing before the reveal"
+        summary={
+          ecgCurriculum
+            ? `${ecgCurriculum.trainingStage}. ${ecgCurriculum.advancedObjectives[0]}`
+            : "Choose the best consult frame, reject the tempting misread, and decide which neurological data would most change your mind."
+        }
+        actions={
+          <>
+            <button
+              type="button"
+              onClick={() => setRevealedCase((current) => !current)}
+              className="rounded-full border border-cyan-300/30 bg-cyan-300/10 px-4 py-2 text-sm font-medium text-cyan-100 transition hover:bg-cyan-300/18"
+            >
+              {revealedCase ? "Hide reveal" : "Reveal best frame"}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setRevealedCase(false);
+                applyCaseConsultFrame(activeCase.startingConsultFrameId);
+              }}
+              className="rounded-full border border-white/10 bg-white/6 px-4 py-2 text-sm font-medium text-slate-200 transition hover:bg-white/10"
+            >
+              Reset case
+            </button>
+          </>
+        }
+      >
+        <div className="flex flex-wrap gap-3">
+          {ecgCases.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => selectCase(item.id)}
+              className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+                item.id === activeCase.id
+                  ? "bg-cyan-300 text-slate-950 shadow-[0_10px_24px_rgba(103,211,255,0.24)]"
+                  : "border border-white/10 bg-white/6 text-slate-300 hover:bg-white/10 hover:text-white"
+              }`}
+            >
+              {item.title}
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_360px]">
+          <CaseQuestionPanel
+            title={activeCase.title}
+            oneLiner={activeCase.oneLiner}
+            chiefComplaint={activeCase.chiefComplaint}
+            history={activeCase.history}
+            syndromeFrame={activeCase.syndromeFrame}
+            examFindings={activeCase.examFindings}
+            prompt={activeCase.prompt}
+            hints={activeCase.hints}
+            localizationCues={activeCase.localizationCues}
+            differentialTraps={activeCase.differentialTraps}
+            nextDataRequests={activeCase.nextDataRequests}
+          />
+
+          <div className="space-y-4">
+            <div className="rounded-[24px] border border-white/10 bg-slate-950/35 p-5">
+              <p className="text-xs uppercase tracking-[0.18em] text-slate-400">
+                Your consult frame
+              </p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {ecgConsultFrames.map((frame) => (
+                  <button
+                    key={frame.id}
+                    type="button"
+                    onClick={() => applyCaseConsultFrame(frame.id)}
+                    className={`rounded-full px-3 py-2 text-sm font-medium transition ${
+                      frame.id === caseConsultFrame.id
+                        ? "bg-cyan-300 text-slate-950"
+                        : "border border-white/10 bg-white/6 text-slate-300 hover:bg-white/10 hover:text-white"
+                    }`}
+                  >
+                    {frame.title}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-[24px] border border-white/10 bg-slate-950/35 p-5">
+              <p className="text-xs uppercase tracking-[0.18em] text-cyan-100">
+                Current frame read
+              </p>
+              <h3 className="mt-2 text-lg font-semibold text-white">
+                {caseConsultFrame.title}
+              </h3>
+              <p className="mt-4 text-sm leading-7 text-slate-300">
+                {caseConsultFrame.syndromeFrame}
+              </p>
+              <div className="mt-4 rounded-[20px] border border-white/10 bg-white/6 p-4">
+                <p className="text-xs uppercase tracking-[0.18em] text-slate-400">
+                  Strongest mechanism
+                </p>
+                <p className="mt-2 text-sm leading-7 text-slate-300">
+                  {caseConsultFrame.strongestMechanism}
+                </p>
+              </div>
+              <div className="mt-4 rounded-[20px] border border-white/10 bg-white/6 p-4">
+                <p className="text-xs uppercase tracking-[0.18em] text-slate-400">
+                  Follow-up modules
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {ecgFollowUpTitles.map((title) => (
+                    <span
+                      key={title}
+                      className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-200"
+                    >
+                      {title}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {revealedCase ? (
+          <div className="mt-6">
+            <RevealPanel
+              correct={caseMatches}
+              selectedLabel={caseConsultFrame.title}
+              targetLabel={targetCaseConsultFrame.title}
+              explanation={`${targetCaseConsultFrame.strongestMechanism} ${targetCaseConsultFrame.whyAlternativeWeaker}`}
+              teachingPoints={activeCase.teachingPoints}
+              nextDataRequests={activeCase.nextDataRequests}
+              linkedModules={ecgFollowUpTitles}
+            />
+          </div>
+        ) : null}
+
+        <div className="mt-6">
+          <CompareShell
+            title="Your frame versus the best-fit frame"
+            leftLabel={`Selected: ${caseConsultFrame.title}`}
+            rightLabel={`Best fit: ${targetCaseConsultFrame.title}`}
+            left={
+              <>
+                <p className="font-semibold text-white">
+                  {caseConsultFrame.strongestMechanism}
+                </p>
+                <p className="mt-3">{caseConsultFrame.whyAlternativeWeaker}</p>
+              </>
+            }
+            right={
+              <>
+                <p className="font-semibold text-white">
+                  {targetCaseConsultFrame.strongestMechanism}
+                </p>
+                <ul className="mt-3 space-y-2">
+                  {targetCaseConsultFrame.nextData.map((item) => (
+                    <li key={item}>• {item}</li>
+                  ))}
+                </ul>
+              </>
+            }
+          />
+        </div>
+      </CaseShell>
 
       <section className="grid gap-4 xl:grid-cols-3">
         {ecgControlGroups.map((group) => (
@@ -1576,6 +1780,51 @@ export function ECGExplorer() {
                   accent="from-emerald-300 to-cyan-300"
                   detail="A teaching estimate of how much vagal influence is appearing as PR delay."
                 />
+              </div>
+              <div className="mt-5 grid gap-4 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
+                <div className="rounded-[24px] border border-white/10 bg-slate-950/35 p-4">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <p className="text-xs uppercase tracking-[0.18em] text-cyan-100">
+                      Neurocritical context
+                    </p>
+                    <span
+                      className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] ${
+                        result.neurocardiac.hemodynamicRisk === "high"
+                          ? "bg-rose-300/18 text-rose-100"
+                          : result.neurocardiac.hemodynamicRisk === "moderate"
+                            ? "bg-amber-300/18 text-amber-100"
+                            : "bg-emerald-300/18 text-emerald-100"
+                      }`}
+                    >
+                      {result.neurocardiac.hemodynamicRisk} hemodynamic risk
+                    </span>
+                  </div>
+                  <p className="mt-3 text-sm leading-7 text-slate-300">
+                    {result.neurocardiac.neurocriticalContext}
+                  </p>
+                  <div className="mt-4 grid gap-4 md:grid-cols-2">
+                    <div className="rounded-[20px] border border-white/10 bg-white/6 p-4">
+                      <p className="text-xs uppercase tracking-[0.18em] text-emerald-100">
+                        Monitoring priorities
+                      </p>
+                      <ul className="mt-3 space-y-2 text-sm leading-7 text-slate-300">
+                        {result.neurocardiac.monitoringPriorities.map((item) => (
+                          <li key={item}>• {item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="rounded-[20px] border border-white/10 bg-white/6 p-4">
+                      <p className="text-xs uppercase tracking-[0.18em] text-rose-100">
+                        Red flags
+                      </p>
+                      <ul className="mt-3 space-y-2 text-sm leading-7 text-slate-300">
+                        {result.neurocardiac.redFlags.map((item) => (
+                          <li key={item}>• {item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
               </div>
               <div className="mt-5 grid gap-4 xl:grid-cols-3">
                 <div className="rounded-[24px] border border-white/10 bg-slate-950/35 p-4">

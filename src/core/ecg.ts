@@ -139,11 +139,15 @@ export interface ECGNeurocardiacSummary {
   sympatheticDrive: number;
   respiratoryCoupling: number;
   avNodalBrake: number;
+  neurocriticalContext: string;
+  hemodynamicRisk: "low" | "moderate" | "high";
   narrative: string;
   notes: string[];
   consultPearls: string[];
   mimicsToAvoid: string[];
   nextData: string[];
+  monitoringPriorities: string[];
+  redFlags: string[];
 }
 
 export interface ECGResult {
@@ -316,6 +320,61 @@ export const ecgPresets: ECGPreset[] = [
       axisDegrees: 32,
     }),
   },
+  {
+    id: "postictal-sympathetic-surge",
+    label: "Post-ictal Sympathetic Surge",
+    description:
+      "Fast, adrenergic, and under-variable immediately after a generalized seizure or intense cortical discharge.",
+    neuroFocus:
+      "Useful for teaching how post-ictal catecholamine physiology can distort the strip before primary cardiac disease is declared.",
+    params: preset({
+      heartRate: 126,
+      prInterval: 132,
+      qtInterval: 336,
+      qrsAmp: 1.26,
+      tAmp: 0.27,
+      rhythmIrregularity: 0.008,
+      baselineWander: 0.018,
+      noise: 0.028,
+      axisDegrees: 60,
+    }),
+  },
+  {
+    id: "brainstem-autonomic-instability",
+    label: "Brainstem Autonomic Instability",
+    description:
+      "A labile teaching pattern with exaggerated respiratory coupling and unstable nodal braking.",
+    neuroFocus:
+      "Frames the strip through medullary and pontine autonomic dysregulation rather than fixed intrinsic conduction disease.",
+    params: preset({
+      heartRate: 68,
+      prInterval: 186,
+      qtInterval: 396,
+      qrsAmp: 1.06,
+      rhythmIrregularity: 0.14,
+      baselineWander: 0.085,
+      noise: 0.018,
+      axisDegrees: 28,
+    }),
+  },
+  {
+    id: "cushing-response",
+    label: "Cushing-like Response",
+    description:
+      "Marked bradycardia and strong AV nodal braking in a pattern meant to evoke raised-pressure physiology and neurocritical urgency.",
+    neuroFocus:
+      "Useful when teaching that central pressure and vagal recruitment can produce a high-risk slow strip without primary nodal degeneration.",
+    params: preset({
+      heartRate: 38,
+      prInterval: 224,
+      qtInterval: 438,
+      qrsAmp: 1.02,
+      rhythmIrregularity: 0.045,
+      baselineWander: 0.04,
+      noise: 0.01,
+      axisDegrees: 26,
+    }),
+  },
 ];
 
 export const ecgConsultFrames: ECGConsultFrame[] = [
@@ -398,6 +457,66 @@ export const ecgConsultFrames: ECGConsultFrame[] = [
       "A calm strip is not automatically a healthy strip if the physiology should be dynamic.",
     ],
     linkedPresetId: "autonomic-failure",
+  },
+  {
+    id: "postictal-neurocardiac-pattern",
+    title: "Post-ictal neurocardiac pattern",
+    syndromeFrame:
+      "The strip is fast, adrenergic, and relatively rigid immediately after a seizure-like event. The teaching task is to decide whether this is transient cortical-autonomic spillover or primary cardiac disease masquerading as post-ictal physiology.",
+    strongestMechanism:
+      "Post-ictal sympathetic surge with transient neurocardiac spillover and reduced sinus variability.",
+    weakerAlternative: "Primary tachyarrhythmia or ACS by the first strip alone",
+    whyAlternativeWeaker:
+      "A seizure-timed adrenergic state can produce rate acceleration and repolarization distortion before the heart itself is the main pathology, so trend and context matter more than one strip.",
+    nextData: [
+      "Serial ECGs and biomarkers rather than a single post-event tracing",
+      "Correlate with seizure timing, lactate recovery, and neuro exam rather than reading the strip in isolation",
+    ],
+    teachingPearls: [
+      "The post-ictal strip often says as much about autonomic storm as about myocardium.",
+      "A convincing neurological trigger should stay in the differential until serial data remove it.",
+    ],
+    linkedPresetId: "postictal-sympathetic-surge",
+  },
+  {
+    id: "brainstem-dysautonomia-pattern",
+    title: "Brainstem dysautonomia pattern",
+    syndromeFrame:
+      "The rhythm is labile and over-coupled to autonomic fluctuation. The question is whether the strip is expressing unstable central modulation rather than a fixed nodal lesion.",
+    strongestMechanism:
+      "Medullary or pontine autonomic dysregulation with unstable vagal-sympathetic balance reaching the SA and AV nodes.",
+    weakerAlternative: "Isolated intrinsic conduction disease",
+    whyAlternativeWeaker:
+      "Intrinsic conduction disease is usually more structurally fixed, while central dysautonomia produces context-dependent lability, respiratory coupling shifts, and mixed nodal expression.",
+    nextData: [
+      "Trend the strip against posture, respiration, and evolving brainstem signs",
+      "Look for bulbar, ocular, or arousal clues that make the autonomic story anatomically coherent",
+    ],
+    teachingPearls: [
+      "A labile strip can be a brainstem clue, not just a cardiac nuisance.",
+      "Autonomic instability is a network problem before it is a waveform problem.",
+    ],
+    linkedPresetId: "brainstem-autonomic-instability",
+  },
+  {
+    id: "cushing-neurocritical-pattern",
+    title: "Raised-pressure vagal crisis",
+    syndromeFrame:
+      "The strip is profoundly slow with stronger nodal braking in a neurocritical context. The teaching task is to read this as a high-risk brain-heart signal rather than a benign athletic rhythm.",
+    strongestMechanism:
+      "Raised intracranial pressure or Cushing-like vagal recruitment slowing the sinus node and AV conduction.",
+    weakerAlternative: "Benign baseline athletic bradycardia",
+    whyAlternativeWeaker:
+      "Athletic bradycardia is physiologically calm and stable, whereas a neurocritical vagal crisis lives inside a rising-pressure and evolving brain-injury context.",
+    nextData: [
+      "Immediate neuro exam, pressure context, and hemodynamic trend",
+      "Do not separate the bradycardia from the neurological emergency that may be driving it",
+    ],
+    teachingPearls: [
+      "Slow does not mean safe when the brain is supplying the brake.",
+      "Context transforms the same surface waveform from benign physiology into neurocritical warning.",
+    ],
+    linkedPresetId: "cushing-response",
   },
 ];
 

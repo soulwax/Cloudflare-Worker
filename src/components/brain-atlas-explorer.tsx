@@ -10,7 +10,9 @@ import {
   atlasCategories,
   atlasChapters,
   atlasNetworkNotes,
+  atlasOverlays,
   atlasRegions,
+  getAtlasOverlay,
   type AtlasChapterId,
   type AtlasRegion,
 } from "~/lib/brain-atlas";
@@ -45,9 +47,21 @@ export function BrainAtlasExplorer() {
   const brainAtlasCurriculum = getCurriculumModule("brain-atlas");
   const [chapter, setChapter] = useState<AtlasChapterId>("functions");
   const [regionId, setRegionId] = useState<string>(DEFAULT_REGION.id);
+  const [overlayId, setOverlayId] = useState<string>(atlasOverlays[0]!.id);
+  const [compareRegionId, setCompareRegionId] = useState<string>(
+    atlasOverlays[0]!.compareRegionId,
+  );
   const [caseId, setCaseId] = useState<string>(brainAtlasCases[0]!.id);
   const [revealed, setRevealed] = useState(false);
   const region = useMemo(() => regionById(regionId), [regionId]);
+  const overlay = useMemo(
+    () => getAtlasOverlay(overlayId) ?? atlasOverlays[0]!,
+    [overlayId],
+  );
+  const compareRegion = useMemo(
+    () => regionById(compareRegionId),
+    [compareRegionId],
+  );
   const activeCase = useMemo(
     () => brainAtlasCases.find((item) => item.id === caseId) ?? brainAtlasCases[0]!,
     [caseId],
@@ -58,6 +72,13 @@ export function BrainAtlasExplorer() {
   );
   const chapterMeta = atlasChapters.find((item) => item.id === chapter)!;
   const linkedIds = region.chapter2.interlinks.map((link) => link.target);
+  const overlayRegionMap = useMemo(
+    () =>
+      new Map(
+        overlay.regions.map((item) => [item.regionId, item] as const),
+      ),
+    [overlay],
+  );
   const followUpTitles = activeCase.followUpModules.map(
     (slug) => getCurriculumModule(slug)?.title ?? slug,
   );
@@ -95,6 +116,101 @@ export function BrainAtlasExplorer() {
         <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-300">
           {chapterMeta.summary}
         </p>
+      </section>
+
+      <section className="rounded-[28px] border border-white/10 bg-white/6 p-5 backdrop-blur">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.24em] text-slate-400">
+              Convergence overlays
+            </p>
+            <h2 className="mt-1 text-xl font-semibold text-white">
+              Read anatomy as vascular, visual, brainstem, and loop systems
+            </h2>
+          </div>
+          <p className="text-sm text-slate-300">
+            These overlays turn the atlas into a landing zone for the rest of
+            the app rather than a list of isolated regions.
+          </p>
+        </div>
+
+        <div className="mt-5 flex flex-wrap gap-3">
+          {atlasOverlays.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => {
+                setOverlayId(item.id);
+                setCompareRegionId(item.compareRegionId);
+              }}
+              className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+                item.id === overlay.id
+                  ? "bg-cyan-300 text-slate-950 shadow-[0_10px_24px_rgba(103,211,255,0.24)]"
+                  : "border border-white/10 bg-white/6 text-slate-300 hover:bg-white/10 hover:text-white"
+              }`}
+            >
+              {item.title}
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-5 grid gap-6 xl:grid-cols-[minmax(0,1.05fr)_340px]">
+          <div className="rounded-[24px] border border-white/10 bg-slate-950/35 p-5">
+            <p className="text-xs uppercase tracking-[0.18em] text-cyan-100">
+              Clinical frame
+            </p>
+            <h3 className="mt-2 text-lg font-semibold text-white">
+              {overlay.title}
+            </h3>
+            <p className="mt-4 text-sm leading-7 text-slate-300">
+              {overlay.summary}
+            </p>
+            <div className="mt-5 grid gap-4 lg:grid-cols-2">
+              <div className="rounded-[20px] border border-white/10 bg-white/6 p-4">
+                <p className="text-xs uppercase tracking-[0.18em] text-slate-400">
+                  Why this overlay matters
+                </p>
+                <p className="mt-2 text-sm leading-7 text-slate-300">
+                  {overlay.clinicalFrame}
+                </p>
+              </div>
+              <div className="rounded-[20px] border border-white/10 bg-white/6 p-4">
+                <p className="text-xs uppercase tracking-[0.18em] text-slate-400">
+                  Decisive next data
+                </p>
+                <ul className="mt-3 space-y-2 text-sm leading-7 text-slate-300">
+                  {overlay.decisiveNextData.map((item) => (
+                    <li key={item}>• {item}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-[24px] border border-white/10 bg-slate-950/35 p-5">
+            <p className="text-xs uppercase tracking-[0.18em] text-slate-400">
+              Overlay regions
+            </p>
+            <div className="mt-4 space-y-3">
+              {overlay.regions.map((item) => {
+                const target = regionById(item.regionId);
+                return (
+                  <div
+                    key={item.regionId}
+                    className="rounded-[20px] border border-white/10 bg-white/6 p-4"
+                  >
+                    <p className="text-sm font-semibold text-white">
+                      {item.label} · {target.name}
+                    </p>
+                    <p className="mt-2 text-sm leading-7 text-slate-300">
+                      {item.reason}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
       </section>
 
       <CaseShell
@@ -289,14 +405,23 @@ export function BrainAtlasExplorer() {
             {atlasRegions.map((item) => {
               const isActive = item.id === region.id;
               const isLinked = linkedIds.includes(item.id);
+              const overlayRegion = overlayRegionMap.get(item.id);
               const fill = isActive
                 ? categoryColor(item)
-                : isLinked
+                : overlayRegion?.emphasis === "primary"
+                  ? "rgba(103, 211, 255, 0.92)"
+                  : overlayRegion?.emphasis === "supporting"
+                    ? "rgba(255, 213, 138, 0.82)"
+                    : isLinked
                   ? "rgba(255,213,138,0.94)"
                   : "rgba(226,232,240,0.22)";
               const stroke = isActive
                 ? "#ffffff"
-                : isLinked
+                : overlayRegion
+                  ? overlayRegion.emphasis === "primary"
+                    ? "#67d3ff"
+                    : "#ffd58a"
+                  : isLinked
                   ? "#ffd58a"
                   : "#315577";
 
@@ -443,6 +568,60 @@ export function BrainAtlasExplorer() {
           )}
         </div>
       </section>
+
+      <CompareShell
+        title="Selected region versus anatomical rival"
+        leftLabel={`Selected: ${region.shortLabel}`}
+        rightLabel={`Compare to: ${compareRegion.shortLabel}`}
+        left={
+          <>
+            <p className="font-semibold text-white">{region.name}</p>
+            <p className="mt-2">{region.chapter1.summary}</p>
+            <p className="mt-3">{region.chapter1.clinicalLink}</p>
+          </>
+        }
+        right={
+          <div className="space-y-4">
+            <div className="rounded-[20px] border border-white/10 bg-white/6 p-4">
+              <label className="block">
+                <span className="text-xs uppercase tracking-[0.18em] text-slate-400">
+                  Compare region
+                </span>
+                <select
+                  value={compareRegion.id}
+                  onChange={(event) => setCompareRegionId(event.target.value)}
+                  className="mt-3 w-full rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-cyan-300/40 focus:bg-slate-950/60"
+                >
+                  {atlasRegions
+                    .filter((item) => item.id !== region.id)
+                    .map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {item.name}
+                      </option>
+                    ))}
+                </select>
+              </label>
+            </div>
+            <div className="rounded-[20px] border border-white/10 bg-white/6 p-4">
+              <p className="font-semibold text-white">{compareRegion.name}</p>
+              <p className="mt-2 text-sm leading-7 text-slate-300">
+                {compareRegion.chapter1.summary}
+              </p>
+              <p className="mt-3 text-sm leading-7 text-slate-300">
+                {compareRegion.chapter1.clinicalLink}
+              </p>
+            </div>
+            <div className="rounded-[20px] border border-white/10 bg-white/6 p-4">
+              <p className="text-xs uppercase tracking-[0.18em] text-amber-100">
+                Why the overlay prefers the selected network
+              </p>
+              <p className="mt-3 text-sm leading-7 text-slate-300">
+                {overlay.whyAlternativeWeaker}
+              </p>
+            </div>
+          </div>
+        }
+      />
 
       <section className="rounded-[28px] border border-white/10 bg-white/6 p-5 backdrop-blur">
         <h2 className="text-xl font-semibold text-white">
