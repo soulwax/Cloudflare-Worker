@@ -383,6 +383,39 @@ function buildNeurocardiacSummary(params: ECGParams, qtcBazettMs: number): ECGNe
 				: 'Corrected QT stays in a mid-range teaching zone, which keeps the emphasis on autonomic tone rather than repolarization extremes.',
 	];
 
+	const consultPearls = [
+		sympatheticDrive > 0.62
+			? 'The ECG is behaving like a high-catecholamine surface signal, so repolarization language must be correlated with the neurological trigger before it is equated to primary cardiac injury.'
+			: 'The strip is not overwhelmingly catecholamine-driven, so rhythm interpretation should stay anchored to rate, intervals, and surface morphology rather than neurogenic stress alone.',
+		vagalTone > 0.58
+			? 'Bradycardia and PR delay are coherent with central vagal braking here, which means physiology may explain the nodal pattern better than isolated conduction disease.'
+			: 'Vagal braking is present but not dominant, so nodal timing should be interpreted alongside sympathetic load and baseline rhythm behavior.',
+		respiratoryCoupling < 0.15
+			? 'The relative absence of sinus lability can itself be a teaching clue when the autonomic system should be dynamic.'
+			: 'Respiratory-linked variability is still visible, so the tracing should be read as a physiologic interaction rather than a perfectly fixed metronome.',
+	];
+
+	const mimicsToAvoid = [
+		sympatheticDrive > 0.6
+			? 'Do not overcall primary ACS from rate and repolarization appearance alone when acute CNS stress is the stronger physiological story.'
+			: 'Do not force every rhythm change into an autonomic explanation if the surface morphology and context point elsewhere.',
+		avNodalBrake > 0.5
+			? 'Do not mistake vagally weighted PR prolongation for fixed conduction-system disease without symptom and context correlation.'
+			: 'Do not assume a normal-looking PR interval excludes meaningful autonomic involvement elsewhere in the tracing.',
+	];
+
+	const nextData = [
+		sympatheticDrive > 0.58
+			? 'Trend the ECG and cardiac biomarkers over time, not as a single static snapshot.'
+			: 'Correlate the strip with bedside autonomic context rather than reading it in isolation.',
+		respiratoryCoupling > 0.45
+			? 'Watch the rhythm against breathing or posture to see whether sinus variability is physiology rather than instability.'
+			: 'Ask whether expected sinus variability is absent in a setting where the autonomic system should still be dynamic.',
+		avNodalBrake > 0.46
+			? 'Review medications, vagal triggers, and symptom timing before labeling the nodal delay as structural disease.'
+			: 'Use interval behavior plus bedside state, not rate alone, to decide whether the pattern is compensatory or pathological.',
+	];
+
 	return {
 		autonomicState,
 		vagalTone: round(vagalTone, 3),
@@ -391,6 +424,9 @@ function buildNeurocardiacSummary(params: ECGParams, qtcBazettMs: number): ECGNe
 		avNodalBrake: round(avNodalBrake, 3),
 		narrative,
 		notes,
+		consultPearls,
+		mimicsToAvoid,
+		nextData,
 	};
 }
 

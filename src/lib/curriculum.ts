@@ -108,14 +108,14 @@ export const curriculumModules: CurriculumModule[] = [
   {
     slug: "vision",
     title: "Visual Cortex",
-    trainingStage: "Advanced perceptual systems",
+    trainingStage: "Post-clinical visual localization",
     learningGoals: [
       "Understand hierarchical visual processing",
       "Map perception to ventral stream stages",
     ],
     advancedObjectives: [
       "Use visual syndromes such as agnosia, achromatopsia, and field cuts as localization tools.",
-      "Connect recurrent cortical processing to category stability, attention, and prediction error.",
+      "Connect recurrent cortical processing to category stability, attention, predictive coding, and what additional data should settle a visual localization consult.",
     ],
     prerequisites: ["Retinal organization"],
     linkedModules: ["retina", "brain-atlas", "ask"],
@@ -146,14 +146,14 @@ export const curriculumModules: CurriculumModule[] = [
   {
     slug: "ecg",
     title: "12-Lead ECG Explorer",
-    trainingStage: "Autonomic and neurocardiac interpretation",
+    trainingStage: "Consult-level neurocardiac interpretation",
     learningGoals: [
       "Relate autonomic tone to surface rhythm changes",
       "Interpret ECGs through a brain-heart physiology lens",
     ],
     advancedObjectives: [
       "Separate primary conduction disease from centrally mediated autonomic modulation.",
-      "Relate neurogenic sympathetic surge and vagal braking to ECG pattern shifts without overcalling ischemia.",
+      "Relate neurogenic sympathetic surge, vagal braking, and blunted autonomic modulation to ECG pattern shifts without overcalling ischemia or fixed conduction disease.",
     ],
     prerequisites: ["Basic cardiac conduction"],
     linkedModules: ["neuron", "ask"],

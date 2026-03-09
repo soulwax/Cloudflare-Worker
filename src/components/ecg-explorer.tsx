@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { CompareShell } from "~/components/compare-shell";
 import {
   buildApiUrl,
   describeApiTarget,
@@ -9,6 +10,7 @@ import {
 } from "~/lib/api";
 import {
   defaultEcgParams,
+  ecgConsultFrames,
   ecgControlGroups,
   ecgLeadNames,
   ecgParamDefinitions,
@@ -31,6 +33,7 @@ const ACTIVATION_W = 360;
 const ACTIVATION_H = 280;
 const DEFAULT_PRESET_ID = ecgPresets[0]!.id;
 const CUSTOM_PRESET_ID = "custom";
+const DEFAULT_CONSULT_FRAME_ID = ecgConsultFrames[0]!.id;
 
 const clinicalLeadRows: readonly (readonly ECGLeadName[])[] = [
   ["I", "aVR", "V1", "V4"],
@@ -445,6 +448,8 @@ export function ECGExplorer() {
   const [frameIndex, setFrameIndex] = useState(0);
   const [selectedPresetId, setSelectedPresetId] =
     useState<string>(DEFAULT_PRESET_ID);
+  const [selectedConsultFrameId, setSelectedConsultFrameId] =
+    useState<string>(DEFAULT_CONSULT_FRAME_ID);
   const [display, setDisplay] =
     useState<DisplayOptions>(defaultDisplayOptions);
 
@@ -539,6 +544,16 @@ export function ECGExplorer() {
     void loadEcg(preset.params);
   }
 
+  function applyConsultFrame(frameId: string) {
+    const frame = ecgConsultFrames.find((item) => item.id === frameId);
+    if (!frame) {
+      return;
+    }
+
+    setSelectedConsultFrameId(frame.id);
+    applyPreset(frame.linkedPresetId);
+  }
+
   const activeFrame = result?.activation.frames[frameIndex] ?? null;
   const activationFrames = result?.activation.frames ?? [];
   const leadAxes = result?.activation.leadAxes ?? [];
@@ -555,6 +570,9 @@ export function ECGExplorer() {
       ? "Custom physiology"
       : ecgPresets.find((preset) => preset.id === selectedPresetId)?.label ??
         "Custom physiology";
+  const activeConsultFrame =
+    ecgConsultFrames.find((item) => item.id === selectedConsultFrameId) ??
+    ecgConsultFrames[0]!;
 
   return (
     <div className="space-y-6">
@@ -742,6 +760,102 @@ export function ECGExplorer() {
             width, which makes interval inspection feel much closer to bedside
             ECG review.
           </p>
+        </div>
+      </section>
+
+      <section className="rounded-[28px] border border-white/10 bg-white/6 p-5 backdrop-blur">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.24em] text-slate-400">
+              Consult frames
+            </p>
+            <h2 className="mt-1 text-xl font-semibold text-white">
+              Read the strip through neurocardiac scenarios
+            </h2>
+            <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-300">
+              These frames push the lab beyond parameter twiddling. Pick the
+              consult scenario, load the aligned physiology, and then decide
+              what the strip is really saying versus what it could be mistaken
+              for.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-5 flex flex-wrap gap-3">
+          {ecgConsultFrames.map((frame) => (
+            <button
+              key={frame.id}
+              type="button"
+              onClick={() => applyConsultFrame(frame.id)}
+              className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+                frame.id === activeConsultFrame.id
+                  ? "bg-cyan-300 text-slate-950 shadow-[0_10px_24px_rgba(103,211,255,0.24)]"
+                  : "border border-white/10 bg-white/6 text-slate-300 hover:bg-white/10 hover:text-white"
+              }`}
+            >
+              {frame.title}
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-5 grid gap-6 xl:grid-cols-[minmax(0,1.05fr)_340px]">
+          <div className="rounded-[24px] border border-white/10 bg-slate-950/35 p-5">
+            <p className="text-xs uppercase tracking-[0.18em] text-cyan-100">
+              Syndrome frame
+            </p>
+            <h3 className="mt-2 text-lg font-semibold text-white">
+              {activeConsultFrame.title}
+            </h3>
+            <p className="mt-4 text-sm leading-7 text-slate-300">
+              {activeConsultFrame.syndromeFrame}
+            </p>
+          </div>
+
+          <div className="rounded-[24px] border border-white/10 bg-slate-950/35 p-5">
+            <p className="text-xs uppercase tracking-[0.18em] text-slate-400">
+              Highest-yield next data
+            </p>
+            <ul className="mt-3 space-y-2 text-sm leading-7 text-slate-300">
+              {activeConsultFrame.nextData.map((item) => (
+                <li key={item}>• {item}</li>
+              ))}
+            </ul>
+            <button
+              type="button"
+              onClick={() => applyPreset(activeConsultFrame.linkedPresetId)}
+              className="mt-5 rounded-full border border-cyan-300/30 bg-cyan-300/10 px-4 py-2 text-sm font-medium text-cyan-100 transition hover:bg-cyan-300/18"
+            >
+              Load linked preset
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-6">
+          <CompareShell
+            title="Best mechanism versus attractive misread"
+            leftLabel="Best mechanism"
+            rightLabel="Weaker alternative"
+            left={
+              <>
+                <p className="font-semibold text-white">
+                  {activeConsultFrame.strongestMechanism}
+                </p>
+                <ul className="mt-3 space-y-2">
+                  {activeConsultFrame.teachingPearls.map((item) => (
+                    <li key={item}>• {item}</li>
+                  ))}
+                </ul>
+              </>
+            }
+            right={
+              <>
+                <p className="font-semibold text-white">
+                  {activeConsultFrame.weakerAlternative}
+                </p>
+                <p className="mt-3">{activeConsultFrame.whyAlternativeWeaker}</p>
+              </>
+            }
+          />
         </div>
       </section>
 
@@ -1462,6 +1576,38 @@ export function ECGExplorer() {
                   accent="from-emerald-300 to-cyan-300"
                   detail="A teaching estimate of how much vagal influence is appearing as PR delay."
                 />
+              </div>
+              <div className="mt-5 grid gap-4 xl:grid-cols-3">
+                <div className="rounded-[24px] border border-white/10 bg-slate-950/35 p-4">
+                  <p className="text-xs uppercase tracking-[0.18em] text-cyan-100">
+                    Consult pearls
+                  </p>
+                  <ul className="mt-3 space-y-2 text-sm leading-7 text-slate-300">
+                    {result.neurocardiac.consultPearls.map((item) => (
+                      <li key={item}>• {item}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="rounded-[24px] border border-white/10 bg-slate-950/35 p-4">
+                  <p className="text-xs uppercase tracking-[0.18em] text-amber-100">
+                    Mimics to avoid
+                  </p>
+                  <ul className="mt-3 space-y-2 text-sm leading-7 text-slate-300">
+                    {result.neurocardiac.mimicsToAvoid.map((item) => (
+                      <li key={item}>• {item}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="rounded-[24px] border border-white/10 bg-slate-950/35 p-4">
+                  <p className="text-xs uppercase tracking-[0.18em] text-emerald-100">
+                    Next data
+                  </p>
+                  <ul className="mt-3 space-y-2 text-sm leading-7 text-slate-300">
+                    {result.neurocardiac.nextData.map((item) => (
+                      <li key={item}>• {item}</li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             </div>
 

@@ -200,6 +200,9 @@ describe('Neuro Explorer API', () => {
 				vagalTone: number;
 				sympatheticDrive: number;
 				notes: string[];
+				consultPearls: string[];
+				mimicsToAvoid: string[];
+				nextData: string[];
 			};
 		};
 		expect(data.leads.V2!.length).toBeGreaterThan(100);
@@ -217,6 +220,9 @@ describe('Neuro Explorer API', () => {
 		expect(data.neurocardiac.vagalTone).toBeGreaterThanOrEqual(0);
 		expect(data.neurocardiac.sympatheticDrive).toBeGreaterThanOrEqual(0);
 		expect(data.neurocardiac.notes.length).toBeGreaterThanOrEqual(3);
+		expect(data.neurocardiac.consultPearls.length).toBeGreaterThanOrEqual(3);
+		expect(data.neurocardiac.mimicsToAvoid.length).toBeGreaterThanOrEqual(2);
+		expect(data.neurocardiac.nextData.length).toBeGreaterThanOrEqual(3);
 	});
 
 	it('returns brain-atlas regions with interlinked circuits', async () => {

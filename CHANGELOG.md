@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.21.0] - 2026-03-09
+
+### Added
+
+- Added consult-level visual syndrome teaching to `Vision`, including field-cut and ventral-stream cases with strongest localization, weaker alternatives, and decisive next-data prompts.
+- Added new neurocardiac presets and consult frames to `ECG`, including neurogenic catecholamine surge, autonomic failure, and raised-ICP vagal-brake patterns.
+- Added dynamic neurocardiac consult output to the ECG API, including consult pearls, mimics to avoid, and highest-yield next data.
+
+### Changed
+
+- Reframed `Vision` from a pure classifier walkthrough into a post-clinical localization surface tied to ventral-stream stages.
+- Reframed `ECG` from a physiology-only simulator into a consult-style neurocardiac interpretation lab.
+- Updated curriculum and module copy so `Vision` and `ECG` advertise the new consult-level teaching emphasis from the home surface.
+
 ## [0.20.0] - 2026-03-09
 
 ### Added

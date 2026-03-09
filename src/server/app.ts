@@ -12,13 +12,14 @@ import type { AiClient } from './ai/client';
 const ROUTES: Record<string, string> = {
 	'/neuron':
 		'Leaky Integrate-and-Fire neuron simulation. Params: tau, threshold, inputCurrent, duration, restingPotential, resetPotential, refractoryPeriod, dt',
-	'/vision': 'Image classification via ResNet-50, mapped to the ventral visual stream (V1 -> V2 -> V4 -> IT -> PFC). Param: url=<image_url>',
+	'/vision':
+		'Image classification via ResNet-50, mapped to the ventral visual stream (V1 -> V2 -> V4 -> IT -> PFC) and used alongside consult-level visual localization teaching. Param: url=<image_url>',
 	'/brain-atlas': 'Interactive brain atlas with Chapter 1 on regional functions and Chapter 2 on interlinked circuits.',
 	'/ask':
 		'Post-clinical neuroscience and clinical neurology tutor. Params: q=<question>, topic=<optional_topic>, level=<post-clinical|oral-boards|consult-rounds>',
 	'/plasticity': 'Spike-Timing Dependent Plasticity (STDP) simulation. Params: deltaT, pairCount, aPlus, aMinus, tauPlus, tauMinus, initialWeight',
 	'/ecg':
-		'12-lead neurocardiac ECG lab with autonomic-tone presets, conduction timing, rhythm-strip landmarks, and 3D activation-vector data.',
+		'12-lead neurocardiac ECG lab with autonomic-tone presets, consult-level teaching frames, conduction timing, rhythm-strip landmarks, and 3D activation-vector data.',
 	'/grid-cell':
 		'Entorhinal grid-cell simulator with spatial firing fields, navigation path, and rate-map controls. Params: arenaSize, durationSec, speed, spacing, orientation, phaseX, phaseY, sharpness, maxRate, thetaMod, turnNoise',
 	'/dopamine':

@@ -64,7 +64,7 @@ export const moduleCards: ModuleCard[] = [
     slug: "vision",
     title: "Visual Cortex",
     description:
-      "Classify images through the internal Next.js API while mapping the result onto the ventral visual stream.",
+      "Classify images through the internal Next.js API while working through consult-level field cuts, agnosias, and ventral-stream localization traps.",
     badge: "Cloudflare AI",
     href: "/vision",
   },
@@ -80,7 +80,7 @@ export const moduleCards: ModuleCard[] = [
     slug: "ecg",
     title: "12-Lead ECG Explorer",
     description:
-      "Study ECGs through a neurocardiac lens with autonomic presets, annotated rhythm strips, and a 3D activation map.",
+      "Study ECGs through a neurocardiac lens with autonomic presets, consult-level read frames, annotated rhythm strips, and a 3D activation map.",
     badge: "Clinical",
     href: "/ecg",
   },

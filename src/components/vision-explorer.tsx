@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { CompareShell } from "~/components/compare-shell";
 import {
   buildApiUrl,
   describeApiTarget,
@@ -9,10 +10,12 @@ import {
 } from "~/lib/api";
 import {
   visionDefaultImageUrl,
+  visionConsultCases,
   visionKeyInsight,
   visionSkipConnections,
   visionStages,
   type VisionClassification,
+  type VisionConsultCase,
   type VisionSkipConnections,
   type VisionStage,
 } from "~/lib/vision";
@@ -36,6 +39,8 @@ function isVisionSuccessResponse(
 
 export function VisionExplorer() {
   const [imageUrl, setImageUrl] = useState(visionDefaultImageUrl);
+  const [consultCaseId, setConsultCaseId] =
+    useState<string>(visionConsultCases[0]!.id);
   const [result, setResult] = useState<VisionSuccessResponse | null>(null);
   const [error, setError] = useState<ApiErrorInfo | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -108,6 +113,13 @@ export function VisionExplorer() {
 
   const pipeline = result?.processing_pipeline ?? visionStages;
   const skipConnections = result?.skip_connections ?? visionSkipConnections;
+  const activeConsultCase =
+    visionConsultCases.find((item) => item.id === consultCaseId) ??
+    visionConsultCases[0]!;
+  const correlatedStage =
+    pipeline.find((stage) =>
+      activeConsultCase.pipelineCorrelation.includes(stage.corticalArea.split(" ")[0]!),
+    ) ?? null;
 
   return (
     <div className="space-y-6">
@@ -121,8 +133,10 @@ export function VisionExplorer() {
               Visual cortex inference inside the primary Next.js app
             </h1>
             <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-300">
-              The App Router UI now talks directly to an internal server route
-              that forwards image classification to Cloudflare AI.
+              The page still runs image classification through Cloudflare AI,
+              but it now doubles as a post-clinical visual localization lab:
+              field-cut logic, ventral-stream syndromes, and the next data that
+              should settle the case.
             </p>
           </div>
           <div className="rounded-3xl border border-cyan-300/15 bg-cyan-300/8 px-4 py-3 text-xs uppercase tracking-[0.18em] text-cyan-100">
@@ -300,6 +314,136 @@ export function VisionExplorer() {
           <p className="mt-4 text-sm leading-7 text-slate-300">
             {skipConnections.neuroscience}
           </p>
+        </div>
+      </section>
+
+      <section className="rounded-[28px] border border-white/10 bg-white/6 p-5 backdrop-blur">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.24em] text-slate-400">
+              Post-clinical visual syndromes
+            </p>
+            <h2 className="mt-1 text-xl font-semibold text-white">
+              Read the visual complaint before you chase the image label
+            </h2>
+            <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-300">
+              These cases force the same move good consults make: define the
+              syndrome, pick the strongest localization layer, reject the neat
+              but weaker alternative, and ask for the next datum that should
+              settle the case.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-5 flex flex-wrap gap-3">
+          {visionConsultCases.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => setConsultCaseId(item.id)}
+              className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+                item.id === activeConsultCase.id
+                  ? "bg-cyan-300 text-slate-950 shadow-[0_10px_24px_rgba(103,211,255,0.24)]"
+                  : "border border-white/10 bg-white/6 text-slate-300 hover:bg-white/10 hover:text-white"
+              }`}
+            >
+              {item.title}
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-5 grid gap-6 xl:grid-cols-[minmax(0,1.05fr)_340px]">
+          <div className="rounded-[24px] border border-white/10 bg-slate-950/35 p-5">
+            <p className="text-xs uppercase tracking-[0.18em] text-cyan-100">
+              Syndrome frame
+            </p>
+            <h3 className="mt-2 text-lg font-semibold text-white">
+              {activeConsultCase.title}
+            </h3>
+            <p className="mt-4 text-sm leading-7 text-slate-300">
+              {activeConsultCase.syndromeFrame}
+            </p>
+
+            <div className="mt-5 grid gap-4 lg:grid-cols-2">
+              <div className="rounded-[20px] border border-white/10 bg-white/6 p-4">
+                <p className="text-xs uppercase tracking-[0.18em] text-slate-400">
+                  Strongest localization
+                </p>
+                <p className="mt-2 text-sm font-medium text-white">
+                  {activeConsultCase.strongestLocalization}
+                </p>
+                <p className="mt-3 text-sm leading-7 text-slate-300">
+                  {activeConsultCase.whyItFits}
+                </p>
+              </div>
+              <div className="rounded-[20px] border border-white/10 bg-white/6 p-4">
+                <p className="text-xs uppercase tracking-[0.18em] text-slate-400">
+                  Decisive next data
+                </p>
+                <ul className="mt-3 space-y-2 text-sm leading-7 text-slate-300">
+                  {activeConsultCase.decisiveNextData.map((item) => (
+                    <li key={item}>• {item}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-[24px] border border-white/10 bg-slate-950/35 p-5">
+            <p className="text-xs uppercase tracking-[0.18em] text-slate-400">
+              Pipeline correlation
+            </p>
+            <p className="mt-3 text-sm leading-7 text-slate-300">
+              {activeConsultCase.pipelineCorrelation}
+            </p>
+            {correlatedStage ? (
+              <div className="mt-4 rounded-[20px] border border-cyan-300/20 bg-cyan-300/8 p-4">
+                <p className="text-xs uppercase tracking-[0.18em] text-cyan-100">
+                  Closest modeled stage
+                </p>
+                <p className="mt-2 text-sm font-medium text-white">
+                  {correlatedStage.corticalArea}
+                </p>
+                <p className="mt-3 text-sm leading-7 text-slate-300">
+                  {correlatedStage.biology}
+                </p>
+              </div>
+            ) : null}
+            <div className="mt-4 rounded-[20px] border border-white/10 bg-white/6 p-4">
+              <p className="text-xs uppercase tracking-[0.18em] text-slate-400">
+                Teaching pearls
+              </p>
+              <ul className="mt-3 space-y-2 text-sm leading-7 text-slate-300">
+                {activeConsultCase.teachingPearls.map((item) => (
+                  <li key={item}>• {item}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-6">
+          <CompareShell
+            title="Strongest localization versus attractive wrong turn"
+            leftLabel="Best fit"
+            rightLabel="Weaker alternative"
+            left={
+              <>
+                <p className="font-semibold text-white">
+                  {activeConsultCase.strongestLocalization}
+                </p>
+                <p className="mt-3">{activeConsultCase.whyItFits}</p>
+              </>
+            }
+            right={
+              <>
+                <p className="font-semibold text-white">
+                  {activeConsultCase.weakerAlternative}
+                </p>
+                <p className="mt-3">{activeConsultCase.whyAlternativeWeaker}</p>
+              </>
+            }
+          />
         </div>
       </section>
 

@@ -65,6 +65,18 @@ export interface ECGPreset {
   params: ECGParams;
 }
 
+export interface ECGConsultFrame {
+  id: string;
+  title: string;
+  syndromeFrame: string;
+  strongestMechanism: string;
+  weakerAlternative: string;
+  whyAlternativeWeaker: string;
+  nextData: string[];
+  teachingPearls: string[];
+  linkedPresetId: string;
+}
+
 export interface ECGPoint {
   t: number;
   mv: number;
@@ -129,6 +141,9 @@ export interface ECGNeurocardiacSummary {
   avNodalBrake: number;
   narrative: string;
   notes: string[];
+  consultPearls: string[];
+  mimicsToAvoid: string[];
+  nextData: string[];
 }
 
 export interface ECGResult {
@@ -244,6 +259,145 @@ export const ecgPresets: ECGPreset[] = [
       noise: 0.02,
       axisDegrees: 54,
     }),
+  },
+  {
+    id: "neurogenic-catecholamine-surge",
+    label: "Neurogenic Catecholamine Surge",
+    description:
+      "Marked tachycardia, blunted variability, and repolarization compression in a pattern that can tempt overcalling primary cardiac pathology.",
+    neuroFocus:
+      "Useful for teaching ECG changes after acute CNS stress such as subarachnoid hemorrhage or intense sympathetic discharge.",
+    params: preset({
+      heartRate: 132,
+      prInterval: 124,
+      qtInterval: 322,
+      tAmp: 0.24,
+      qrsAmp: 1.34,
+      stShift: -0.04,
+      rhythmIrregularity: 0.01,
+      baselineWander: 0.022,
+      noise: 0.03,
+      axisDegrees: 62,
+    }),
+  },
+  {
+    id: "autonomic-failure",
+    label: "Autonomic Failure",
+    description:
+      "A relatively fixed rhythm with blunted respiratory variability, minimal sinus lability, and a flatter autonomic signature.",
+    neuroFocus:
+      "Frames the tracing through impaired autonomic modulation rather than through intrinsic nodal disease alone.",
+    params: preset({
+      heartRate: 86,
+      prInterval: 152,
+      qtInterval: 364,
+      qrsAmp: 1.08,
+      rhythmIrregularity: 0.003,
+      baselineWander: 0.012,
+      noise: 0.012,
+      axisDegrees: 40,
+    }),
+  },
+  {
+    id: "raised-icp-vagal-brake",
+    label: "Raised ICP Vagal Brake",
+    description:
+      "Pronounced bradycardia with stronger AV nodal delay, used to discuss centrally driven vagal dominance and neurogenic rhythm change.",
+    neuroFocus:
+      "Useful when teaching that the brain can slow the heart through central autonomic pressure before the conduction system itself is structurally diseased.",
+    params: preset({
+      heartRate: 44,
+      prInterval: 214,
+      qtInterval: 430,
+      qrsAmp: 1.04,
+      rhythmIrregularity: 0.055,
+      baselineWander: 0.05,
+      noise: 0.012,
+      axisDegrees: 32,
+    }),
+  },
+];
+
+export const ecgConsultFrames: ECGConsultFrame[] = [
+  {
+    id: "neurogenic-stress-pattern",
+    title: "Acute neurogenic stress pattern",
+    syndromeFrame:
+      "The tracing is fast, relatively fixed, and catecholamine-weighted. The teaching question is whether the ECG is reflecting primary cardiac disease or an autonomic response to acute CNS injury or severe stress physiology.",
+    strongestMechanism:
+      "Central sympathetic surge with neurocardiac spillover, producing a tachycardic and repolarization-shifted surface pattern.",
+    weakerAlternative: "Primary ACS by ECG appearance alone",
+    whyAlternativeWeaker:
+      "An isolated tracing cannot outrank the physiology. When sympathetic context is overwhelming, repolarization distortion can be secondary and demands correlation rather than reflexively becoming the diagnosis.",
+    nextData: [
+      "Serial troponins and dynamic ECG trend rather than one tracing in isolation",
+      "Bedside correlation with the neurological trigger, echo pattern, and hemodynamic context",
+    ],
+    teachingPearls: [
+      "Neurogenic ECG changes are often diagnosis-adjacent but not diagnosis-complete.",
+      "The wrong move is to let the strip erase the neurological context that generated it.",
+    ],
+    linkedPresetId: "neurogenic-catecholamine-surge",
+  },
+  {
+    id: "vagotonic-bradycardia",
+    title: "Central vagotonic bradycardia",
+    syndromeFrame:
+      "The strip is slow and shows stronger nodal braking. The teaching task is to decide whether this is a benign or centrally mediated autonomic state versus intrinsic conduction-system disease.",
+    strongestMechanism:
+      "Increased vagal influence on SA and AV nodal tissue, with bradycardia and PR prolongation expressed at the surface.",
+    weakerAlternative: "Primary AV-node or infranodal conduction disease",
+    whyAlternativeWeaker:
+      "When rate slowing and nodal delay move with a coherent autonomic context, physiology explains the strip more parsimoniously than isolated conduction pathology does.",
+    nextData: [
+      "Symptom correlation, medication review, and response to autonomic context rather than only interval measurement",
+      "Look for parallel signs of raised vagal influence before declaring fixed conduction disease",
+    ],
+    teachingPearls: [
+      "Slow is not synonymous with structural conduction disease.",
+      "Autonomic tone can move rate and PR together in a way the bedside story should recognize.",
+    ],
+    linkedPresetId: "raised-icp-vagal-brake",
+  },
+  {
+    id: "orthostatic-dysautonomia",
+    title: "Orthostatic autonomic compensation",
+    syndromeFrame:
+      "Rate rises and variability narrows as the system defends pressure. The question is whether this is an adaptive baroreflex pattern, early dysautonomia, or a primary tachyarrhythmia label applied too quickly.",
+    strongestMechanism:
+      "Baroreflex unloading with sympathetic recruitment and relative withdrawal of respiratory sinus modulation.",
+    weakerAlternative: "Primary tachyarrhythmia by heart rate alone",
+    whyAlternativeWeaker:
+      "A modestly fast rhythm without chaotic atrial or ventricular behavior can still be a physiological compensation pattern, especially when it tracks posture and autonomic load.",
+    nextData: [
+      "Orthostatic vitals and symptom-trigger correlation",
+      "Ask whether variability returns with recumbency or reduced autonomic stress",
+    ],
+    teachingPearls: [
+      "Rate must be interpreted with context, not worshiped in isolation.",
+      "Autonomic compensation can look dramatic while still being physiologically organized.",
+    ],
+    linkedPresetId: "orthostatic-compensation",
+  },
+  {
+    id: "fixed-autonomic-output",
+    title: "Blunted autonomic modulation",
+    syndromeFrame:
+      "The tracing looks relatively fixed and under-modulated. The teaching target is impaired autonomic adaptability rather than simply a normal rhythm with nothing to say.",
+    strongestMechanism:
+      "Reduced autonomic modulation with loss of expected sinus lability and respiratory coupling.",
+    weakerAlternative: "Perfectly normal resting sinus rhythm",
+    whyAlternativeWeaker:
+      "A strip can be organized and still be pathologically rigid if the expected autonomic variability is absent in the right clinical setting.",
+    nextData: [
+      "Respiratory-linked rhythm review and bedside autonomic testing",
+      "Orthostatic history, sweating symptoms, and autonomic reflex correlation",
+    ],
+    teachingPearls: [
+      "Absence of variability can be as informative as excess variability.",
+      "A calm strip is not automatically a healthy strip if the physiology should be dynamic.",
+    ],
+    linkedPresetId: "autonomic-failure",
   },
 ];
 
