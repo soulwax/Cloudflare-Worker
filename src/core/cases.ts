@@ -24,3 +24,8 @@ export interface VisualFieldLocalizationCase extends InstructionCase {
   expectedPresetId: string;
   startingPresetId: string;
 }
+
+export interface RetinaClinicalCase extends InstructionCase {
+  expectedPresetId: string;
+  startingPresetId: string;
+}

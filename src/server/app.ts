@@ -25,7 +25,7 @@ const ROUTES: Record<string, string> = {
 	'/dopamine':
 		'Dopamine reward-prediction error simulator. Params: durationMs, dtMs, trialCount, cueTime, rewardTime, rewardSize, learningRate, discount, traceDecay, omissionTrial',
 	'/retina':
-		'Retinal receptive field simulator. Params: gridSize, centerSigma, surroundSigma, surroundStrength, stimulusType, stimulusRadius, annulusWidth, stimulusX, stimulusY, contrast',
+		'Retinal receptive field simulator with prechiasmal neuro-ophthalmology teaching. Params: gridSize, centerSigma, surroundSigma, surroundStrength, stimulusType, stimulusRadius, annulusWidth, stimulusX, stimulusY, contrast',
 };
 
 export interface AppEnv {

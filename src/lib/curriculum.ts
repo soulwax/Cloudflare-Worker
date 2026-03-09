@@ -51,20 +51,22 @@ export const curriculumModules: CurriculumModule[] = [
   {
     slug: "retina",
     title: "Retinal Receptive Field Lab",
-    trainingStage: "Systems visual neuroscience",
+    trainingStage: "Post-clinical neuro-ophthalmic triage",
     learningGoals: [
       "Explain center-surround antagonism",
       "Predict how stimulus size and position change retinal output",
+      "Separate retinal, optic-disc, and optic-nerve patterns before escalating to cortex",
     ],
     advancedObjectives: [
       "Connect retinal preprocessing to later cortical constraints instead of treating the retina as a passive camera.",
-      "Use receptive-field logic to reason forward into contrast sensitivity, edge extraction, and lesion syndromes.",
+      "Use central scotoma, blind-spot enlargement, arcuate loss, and curtain-like deficits as prechiasmal localization tools.",
     ],
     prerequisites: ["Basic visual pathway knowledge"],
-    linkedModules: ["vision", "brain-atlas"],
+    linkedModules: ["visual-field", "vision", "brain-atlas", "ask"],
     commonMisconceptions: [
       "Ganglion cells respond to brightness alone.",
       "Large stimuli always create stronger responses.",
+      "Any visual complaint should be localized to cortex before the eye and optic nerve are excluded.",
     ],
   },
   {

@@ -41,8 +41,8 @@ export const moduleCards: ModuleCard[] = [
     slug: "retina",
     title: "Retinal Receptive Field Lab",
     description:
-      "Explore linked receptive-field heatmaps, size tuning, and position scans in one typed interface.",
-    badge: "Perception",
+      "Move from center-surround physiology into prechiasmal neuro-ophthalmology with retinal, disc, and optic-nerve compare mode plus case-based triage.",
+    badge: "Neuro-Ophthalmology",
     href: "/retina",
   },
   {

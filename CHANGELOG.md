@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.23.0] - 2026-03-09
+
+### Added
+
+- Added consult-level retina physiology presets that frame center-surround computation as the first step in visual localization rather than an isolated heatmap demo.
+- Added a new neuro-ophthalmology teaching layer to `Retina`, including prechiasmal compare mode for optic neuritis, papilledema, glaucoma, retinal detachment, and macular lesions.
+- Added case-based retinal and optic-disc triage with typed test coverage for preset wiring, blind-spot logic, and the expanded retina simulator summary output.
+
+### Changed
+
+- Reframed `Retina` from a pure receptive-field lab into a post-clinical neuro-ophthalmology module that bridges into `visual-field`, `vision`, `brain-atlas`, and `ask`.
+- Updated curriculum, site copy, and API route metadata so the upgraded retina module is described in the same consult-level teaching language as the rest of the migrated app.
+
 ## [0.22.0] - 2026-03-09
 
 ### Added
