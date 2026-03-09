@@ -80,7 +80,7 @@ export const moduleCards: ModuleCard[] = [
     slug: "ecg",
     title: "12-Lead ECG Explorer",
     description:
-      "Explore linked lead traces, a 3D activation view, and lead-axis geometry in a server-driven electrophysiology lab.",
+      "Study ECGs through a neurocardiac lens with autonomic presets, annotated rhythm strips, and a 3D activation map.",
     badge: "Clinical",
     href: "/ecg",
   },

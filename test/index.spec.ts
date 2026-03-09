@@ -26,7 +26,7 @@ describe('Neuro Explorer API', () => {
 		expect(data.name).toBe('Neuro Explorer');
 		expect(data.routes['/ask']).toContain('Socratic neuroscience tutor');
 		expect(data.routes['/brain-atlas']).toContain('Interactive brain atlas');
-		expect(data.routes['/ecg']).toContain('12-lead ECG simulator');
+		expect(data.routes['/ecg']).toContain('12-lead neurocardiac ECG lab');
 		expect(data.routes['/grid-cell']).toContain('Entorhinal grid-cell simulator');
 		expect(data.routes['/dopamine']).toContain('reward-prediction error simulator');
 		expect(data.routes['/retina']).toContain('Retinal receptive field simulator');
@@ -166,6 +166,17 @@ describe('Neuro Explorer API', () => {
 				frames: Array<{ phase: string; dominantLead: string; vector: { magnitude: number } }>;
 				leadAxes: Array<{ name: string }>;
 			};
+			beat: {
+				rhythmStripLead: string;
+				intervals: { prMs: number; qrsMs: number; qtMs: number };
+				landmarks: { qrsOnset: number; qrsOffset: number; tPeak: number };
+			};
+			neurocardiac: {
+				autonomicState: string;
+				vagalTone: number;
+				sympatheticDrive: number;
+				notes: string[];
+			};
 		};
 		expect(data.leads.V2!.length).toBeGreaterThan(100);
 		expect(data.activation.beatMs).toBeGreaterThan(500);
@@ -174,6 +185,14 @@ describe('Neuro Explorer API', () => {
 		expect(data.activation.frames.some((frame) => frame.phase === 'QRS')).toBe(true);
 		expect(data.activation.frames.some((frame) => frame.dominantLead.startsWith('V'))).toBe(true);
 		expect(data.activation.frames.some((frame) => frame.vector.magnitude > 0.2)).toBe(true);
+		expect(data.beat.rhythmStripLead).toBe('II');
+		expect(data.beat.intervals.prMs).toBeGreaterThan(80);
+		expect(data.beat.landmarks.qrsOffset).toBeGreaterThan(data.beat.landmarks.qrsOnset);
+		expect(data.beat.landmarks.tPeak).toBeGreaterThan(data.beat.landmarks.qrsOffset);
+		expect(data.neurocardiac.autonomicState.length).toBeGreaterThan(8);
+		expect(data.neurocardiac.vagalTone).toBeGreaterThanOrEqual(0);
+		expect(data.neurocardiac.sympatheticDrive).toBeGreaterThanOrEqual(0);
+		expect(data.neurocardiac.notes.length).toBeGreaterThanOrEqual(3);
 	});
 
 	it('returns brain-atlas regions with interlinked circuits', async () => {

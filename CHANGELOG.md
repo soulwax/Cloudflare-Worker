@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.17.0] - 2026-03-09
+
+### Added
+
+- Added autonomic teaching presets to the ECG module, including balanced rest, high vagal tone, sympathetic surge, and orthostatic compensation.
+- Added rhythm-strip landmarks and neurocardiac summary fields to the ECG API payload, including representative beat timing plus vagal, sympathetic, respiratory-coupling, and AV nodal metrics.
+
+### Changed
+
+- Reworked the ECG page into a neurocardiac lab with grouped slider controls, ECG-paper display toggles, a clinical sheet layout, and a full rhythm strip with annotations.
+- Updated the ECG experience to frame the tracing through a brain-heart interpretation layer, including an autonomic pathway diagram and revised product copy.
+
+## [0.16.1] - 2026-03-09
+
+### Fixed
+
+- Fixed Vercel production deployments serving a non-built static output by explicitly marking the repository root as a `nextjs` project in [`vercel.json`](vercel.json).
+- Restored the live Vercel site so the root app and internal `/api/*` routes are served through the Next.js runtime instead of a generic static-site preset.
+
 ## [0.16.0] - 2026-03-08
 
 ### Added

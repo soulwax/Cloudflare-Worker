@@ -50,6 +50,21 @@ export interface ECGParamDefinition {
   max: number;
 }
 
+export interface ECGControlGroup {
+  id: string;
+  label: string;
+  description: string;
+  keys: ReadonlyArray<keyof ECGParams>;
+}
+
+export interface ECGPreset {
+  id: string;
+  label: string;
+  description: string;
+  neuroFocus: string;
+  params: ECGParams;
+}
+
 export interface ECGPoint {
   t: number;
   mv: number;
@@ -83,6 +98,39 @@ export interface ECGActivationFrame {
   dominantProjection: number;
 }
 
+export interface ECGBeatLandmarks {
+  pOnset: number;
+  pPeak: number;
+  pOffset: number;
+  qrsOnset: number;
+  rPeak: number;
+  qrsOffset: number;
+  tOnset: number;
+  tPeak: number;
+  tOffset: number;
+}
+
+export interface ECGBeatProfile {
+  rhythmStripLead: ECGLeadName;
+  intervals: {
+    rrMs: number;
+    prMs: number;
+    qrsMs: number;
+    qtMs: number;
+  };
+  landmarks: ECGBeatLandmarks;
+}
+
+export interface ECGNeurocardiacSummary {
+  autonomicState: string;
+  vagalTone: number;
+  sympatheticDrive: number;
+  respiratoryCoupling: number;
+  avNodalBrake: number;
+  narrative: string;
+  notes: string[];
+}
+
 export interface ECGResult {
   params: ECGParams;
   leads: Record<ECGLeadName, ECGPoint[]>;
@@ -91,6 +139,7 @@ export interface ECGResult {
     frames: ECGActivationFrame[];
     leadAxes: ECGLeadAxis[];
   };
+  beat: ECGBeatProfile;
   summary: {
     beatsEstimated: number;
     rrMsNominal: number;
@@ -98,6 +147,7 @@ export interface ECGResult {
     electricalAxis: string;
     dominantRhythm: string;
   };
+  neurocardiac: ECGNeurocardiacSummary;
   explanation: {
     model: string;
     notes: string[];
@@ -122,6 +172,84 @@ export const defaultEcgParams: ECGParams = {
   precordialRotation: 0,
   gain: 1,
 };
+
+function preset(overrides: Partial<ECGParams>): ECGParams {
+  return {
+    ...defaultEcgParams,
+    ...overrides,
+  };
+}
+
+export const ecgPresets: ECGPreset[] = [
+  {
+    id: "balanced-rest",
+    label: "Balanced Rest",
+    description:
+      "A calm sinus-like baseline with modest respiratory variability and standard conduction timings.",
+    neuroFocus:
+      "Use this to orient learners before comparing vagal and sympathetic autonomic shifts.",
+    params: preset({}),
+  },
+  {
+    id: "high-vagal-tone",
+    label: "High Vagal Tone",
+    description:
+      "Slower sinus discharge, longer AV nodal delay, and clearer beat-to-beat respiratory modulation.",
+    neuroFocus:
+      "Highlights medullary vagal braking of the SA and AV nodes, as seen in athletic or relaxed states.",
+    params: preset({
+      heartRate: 52,
+      prInterval: 190,
+      qtInterval: 410,
+      qrsAmp: 0.98,
+      rhythmIrregularity: 0.1,
+      baselineWander: 0.07,
+      noise: 0.01,
+      axisDegrees: 38,
+    }),
+  },
+  {
+    id: "sympathetic-surge",
+    label: "Sympathetic Surge",
+    description:
+      "Faster rate, reduced variability, brisk AV conduction, and shorter repolarization timing.",
+    neuroFocus:
+      "Useful for teaching catecholaminergic drive from stress, pain, or exercise preparation.",
+    params: preset({
+      heartRate: 116,
+      prInterval: 130,
+      qtInterval: 330,
+      tAmp: 0.28,
+      qrsAmp: 1.28,
+      rhythmIrregularity: 0.015,
+      baselineWander: 0.03,
+      noise: 0.024,
+      axisDegrees: 58,
+    }),
+  },
+  {
+    id: "orthostatic-compensation",
+    label: "Orthostatic Compensation",
+    description:
+      "Intermediate tachycardia with reduced sinus variability as the autonomic system defends pressure during posture change.",
+    neuroFocus:
+      "Frames ECG changes in the context of baroreflex unloading and sympathetic recruitment.",
+    params: preset({
+      heartRate: 96,
+      prInterval: 145,
+      qtInterval: 350,
+      qrsAmp: 1.18,
+      rhythmIrregularity: 0.025,
+      baselineWander: 0.038,
+      noise: 0.02,
+      axisDegrees: 54,
+    }),
+  },
+];
+
+export function getEcgPreset(presetId: string) {
+  return ecgPresets.find((presetOption) => presetOption.id === presetId);
+}
 
 export const ecgParamDefinitions: ECGParamDefinition[] = [
   {
@@ -198,7 +326,7 @@ export const ecgParamDefinitions: ECGParamDefinition[] = [
   },
   {
     key: "rhythmIrregularity",
-    label: "Rhythm Variability",
+    label: "Respiratory Variability",
     step: 0.01,
     min: 0,
     max: 0.25,
@@ -213,7 +341,7 @@ export const ecgParamDefinitions: ECGParamDefinition[] = [
   },
   {
     key: "baselineWander",
-    label: "Baseline Wander",
+    label: "Respiratory Wander",
     unit: "mV",
     step: 0.005,
     min: 0,
@@ -221,7 +349,7 @@ export const ecgParamDefinitions: ECGParamDefinition[] = [
   },
   {
     key: "noise",
-    label: "Noise",
+    label: "Muscle / Motion Noise",
     unit: "mV",
     step: 0.005,
     min: 0,
@@ -229,7 +357,7 @@ export const ecgParamDefinitions: ECGParamDefinition[] = [
   },
   {
     key: "gain",
-    label: "Gain",
+    label: "Display Gain",
     unit: "x",
     step: 0.05,
     min: 0.25,
@@ -250,5 +378,38 @@ export const ecgParamDefinitions: ECGParamDefinition[] = [
     step: 1,
     min: 1,
     max: 10,
+  },
+];
+
+export const ecgControlGroups: ECGControlGroup[] = [
+  {
+    id: "autonomic",
+    label: "Autonomic tone",
+    description:
+      "Controls that mostly shape sinus rate, respiratory coupling, and baroreflex-style variability.",
+    keys: ["heartRate", "rhythmIrregularity", "baselineWander", "noise"],
+  },
+  {
+    id: "conduction",
+    label: "Conduction timing",
+    description:
+      "Intervals that change AV nodal delay, depolarization width, and repolarization timing.",
+    keys: ["prInterval", "qrsDuration", "qtInterval", "axisDegrees"],
+  },
+  {
+    id: "morphology",
+    label: "Morphology and acquisition",
+    description:
+      "Amplitude and projection controls that shape what the surface leads record and how strongly they appear.",
+    keys: [
+      "pAmp",
+      "qrsAmp",
+      "tAmp",
+      "stShift",
+      "precordialRotation",
+      "gain",
+      "duration",
+      "dt",
+    ],
   },
 ];

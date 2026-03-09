@@ -1,106 +1,23 @@
 /**
  * 12-Lead ECG Simulator
  *
- * Generates a synthetic 12-lead ECG using a simple dipole-style model
- * with tweakable morphology and rhythm parameters.
+ * Generates a synthetic 12-lead ECG using a dipole-style model with
+ * tweakable morphology, autonomic tone, and rhythm parameters.
  */
 
-const LEAD_NAMES = ['I', 'II', 'III', 'aVR', 'aVL', 'aVF', 'V1', 'V2', 'V3', 'V4', 'V5', 'V6'] as const;
-type LeadName = (typeof LEAD_NAMES)[number];
-
-interface ECGParams {
-	heartRate: number;
-	duration: number;
-	dt: number;
-	axisDegrees: number;
-	pAmp: number;
-	qrsAmp: number;
-	tAmp: number;
-	prInterval: number;
-	qrsDuration: number;
-	qtInterval: number;
-	stShift: number;
-	rhythmIrregularity: number;
-	noise: number;
-	baselineWander: number;
-	precordialRotation: number;
-	gain: number;
-}
-
-interface ECGPoint {
-	t: number;
-	mv: number;
-}
-
-type ECGPhase = 'Baseline' | 'P wave' | 'QRS' | 'ST segment' | 'T wave';
-
-interface LeadAxis {
-	name: LeadName;
-	group: 'limb' | 'precordial';
-	x: number;
-	y: number;
-	z: number;
-}
-
-interface ActivationFrame {
-	t: number;
-	phase: ECGPhase;
-	vector: {
-		x: number;
-		y: number;
-		z: number;
-		magnitude: number;
-	};
-	regions: {
-		atria: number;
-		septum: number;
-		rightVentricle: number;
-		leftVentricle: number;
-		repolarization: number;
-	};
-	dominantLead: LeadName;
-	dominantProjection: number;
-}
-
-interface ECGResult {
-	params: ECGParams;
-	leads: Record<LeadName, ECGPoint[]>;
-	activation: {
-		beatMs: number;
-		frames: ActivationFrame[];
-		leadAxes: LeadAxis[];
-	};
-	summary: {
-		beatsEstimated: number;
-		rrMsNominal: number;
-		qtcBazettMs: number;
-		electricalAxis: string;
-		dominantRhythm: string;
-	};
-	explanation: {
-		model: string;
-		notes: string[];
-	};
-}
-
-const DEFAULTS: ECGParams = {
-	heartRate: 72,
-	duration: 6000,
-	dt: 4,
-	axisDegrees: 45,
-	pAmp: 0.14,
-	qrsAmp: 1.1,
-	tAmp: 0.34,
-	prInterval: 160,
-	qrsDuration: 95,
-	qtInterval: 380,
-	stShift: 0,
-	rhythmIrregularity: 0.04,
-	noise: 0.015,
-	baselineWander: 0.045,
-	precordialRotation: 0,
-	gain: 1,
-};
+import {
+	defaultEcgParams,
+	ecgLeadNames,
+	type ECGActivationFrame,
+	type ECGBeatLandmarks,
+	type ECGPoint,
+	type ECGLeadAxis,
+	type ECGLeadName,
+	type ECGNeurocardiacSummary,
+	type ECGParams,
+	type ECGPhase,
+	type ECGResult,
+} from '../../core/ecg';
 
 const DEG_TO_RAD = Math.PI / 180;
 const SQRT3_OVER_2 = 0.8660254;
@@ -126,7 +43,7 @@ const LEAD_AXES = ([
 		y: axis.y / magnitude,
 		z: axis.z / magnitude,
 	};
-}) as LeadAxis[];
+}) as ECGLeadAxis[];
 
 interface CycleMorphology {
 	cycleMs: number;
@@ -191,6 +108,26 @@ function classifyAxis(axisDegrees: number): string {
 		return 'Right axis deviation';
 	}
 	return 'Normal frontal axis';
+}
+
+function classifyRhythm(params: ECGParams): string {
+	if (params.heartRate < 60) {
+		return params.rhythmIrregularity > 0.06
+			? 'Respiratory sinus bradycardia-like pattern'
+			: 'Sinus bradycardia-like pattern';
+	}
+	if (params.heartRate > 100) {
+		return params.rhythmIrregularity > 0.04
+			? 'Autonomic tachycardia with residual respiratory modulation'
+			: 'Sympathetic sinus tachycardia-like pattern';
+	}
+	if (params.rhythmIrregularity > 0.08) {
+		return 'Respiratory sinus arrhythmia-like pattern';
+	}
+	if (params.rhythmIrregularity > 0.03) {
+		return 'Sinus rhythm with mild respiratory modulation';
+	}
+	return 'Regular sinus-like rhythm';
 }
 
 function getCycleMorphology(cycleMs: number, params: ECGParams): CycleMorphology {
@@ -281,8 +218,8 @@ function computeSpatialVector(
 	return { x, y, z, xr, zr };
 }
 
-function dominantLeadProjection(x: number, y: number, z: number): { name: LeadName; projection: number } {
-	let bestName: LeadName = 'II';
+function dominantLeadProjection(x: number, y: number, z: number): { name: ECGLeadName; projection: number } {
+	let bestName: ECGLeadName = 'II';
 	let bestProjection = 0;
 	let bestAbs = -1;
 
@@ -299,11 +236,20 @@ function dominantLeadProjection(x: number, y: number, z: number): { name: LeadNa
 	return { name: bestName, projection: bestProjection };
 }
 
-function computeActivationRegions(waves: WaveState, x: number, z: number, params: ECGParams): ActivationFrame['regions'] {
+function computeActivationRegions(
+	waves: WaveState,
+	x: number,
+	z: number,
+	params: ECGParams
+): ECGActivationFrame['regions'] {
 	const atria = clamp(Math.abs(waves.pWave) / Math.max(params.pAmp, 0.001), 0, 1);
 	const qrsEnergy = Math.abs(waves.qWave) + Math.abs(waves.rWave) + Math.abs(waves.sWave);
 	const depolarization = clamp(qrsEnergy / Math.max(params.qrsAmp * 1.55, 0.001), 0, 1);
-	const repolarization = clamp(Math.abs(waves.tWave + waves.stComponent * 0.4) / Math.max(params.tAmp + Math.abs(params.stShift) * 0.6, 0.001), 0, 1);
+	const repolarization = clamp(
+		Math.abs(waves.tWave + waves.stComponent * 0.4) / Math.max(params.tAmp + Math.abs(params.stShift) * 0.6, 0.001),
+		0,
+		1
+	);
 	const lateralBias = clamp(0.5 + 0.32 * (x / Math.max(params.qrsAmp, 0.25)) - 0.14 * (z / Math.max(params.qrsAmp, 0.25)), 0.08, 0.92);
 	const anteriorBias = clamp(0.5 + 0.24 * (z / Math.max(params.qrsAmp, 0.25)) - 0.12 * (x / Math.max(params.qrsAmp, 0.25)), 0.08, 0.92);
 
@@ -323,7 +269,7 @@ function buildActivationFrames(params: ECGParams): ECGResult['activation'] {
 	const axisRad = params.axisDegrees * DEG_TO_RAD;
 	const precordialRotRad = params.precordialRotation * DEG_TO_RAD;
 	const morphology = getCycleMorphology(beatMs, params);
-	const frames: ActivationFrame[] = [];
+	const frames: ECGActivationFrame[] = [];
 	let previousCore = 0;
 
 	for (let i = 0; i <= frameCount; i++) {
@@ -362,9 +308,95 @@ function buildActivationFrames(params: ECGParams): ECGResult['activation'] {
 	};
 }
 
+function buildBeatLandmarks(morphology: CycleMorphology): ECGBeatLandmarks {
+	const pHalfWidth = Math.max(8, morphology.pr * 0.18) * 1.6;
+	const qrsStart = morphology.qrsStart;
+	const qrsEnd = morphology.qrsStart + morphology.qrsDuration * 1.05;
+	const tHalfWidth = Math.max(24, morphology.qt * 0.17) * 1.7;
+
+	return {
+		pOnset: round(Math.max(0, morphology.pCenter - pHalfWidth), 1),
+		pPeak: round(morphology.pCenter, 1),
+		pOffset: round(Math.min(morphology.cycleMs, morphology.pCenter + pHalfWidth), 1),
+		qrsOnset: round(qrsStart, 1),
+		rPeak: round(morphology.rCenter, 1),
+		qrsOffset: round(Math.min(morphology.cycleMs, qrsEnd), 1),
+		tOnset: round(Math.max(qrsEnd, morphology.tStart), 1),
+		tPeak: round(morphology.tCenter, 1),
+		tOffset: round(Math.min(morphology.cycleMs, morphology.tCenter + tHalfWidth), 1),
+	};
+}
+
+function buildNeurocardiacSummary(params: ECGParams, qtcBazettMs: number): ECGNeurocardiacSummary {
+	const vagalTone = clamp(
+		0.45 * clamp((78 - params.heartRate) / 38, 0, 1) +
+			0.35 * clamp(params.rhythmIrregularity / 0.16, 0, 1) +
+			0.2 * clamp((params.prInterval - 150) / 90, 0, 1),
+		0,
+		1
+	);
+	const sympatheticDrive = clamp(
+		0.55 * clamp((params.heartRate - 72) / 58, 0, 1) +
+			0.15 * clamp((150 - params.prInterval) / 50, 0, 1) +
+			0.15 * clamp((380 - params.qtInterval) / 80, 0, 1) +
+			0.15 * clamp(params.noise / 0.06, 0, 1),
+		0,
+		1
+	);
+	const respiratoryCoupling = clamp(
+		0.75 * clamp(params.rhythmIrregularity / 0.18, 0, 1) +
+			0.25 * clamp(params.baselineWander / 0.12, 0, 1),
+		0,
+		1
+	);
+	const avNodalBrake = clamp(
+		0.7 * clamp((params.prInterval - 155) / 105, 0, 1) + 0.3 * vagalTone,
+		0,
+		1
+	);
+
+	let autonomicState = 'Balanced autonomic expression';
+	let narrative =
+		'Medullary vagal braking and sympathetic drive are close to balance, producing a conventional sinus-like teaching pattern.';
+
+	if (vagalTone - sympatheticDrive > 0.18) {
+		autonomicState = 'Vagal-leaning autonomic state';
+		narrative =
+			'Brainstem vagal output is emphasized here, slowing SA node firing, lengthening AV nodal transit slightly, and making respiratory variability easier to see on the strip.';
+	} else if (sympatheticDrive - vagalTone > 0.18) {
+		autonomicState = 'Sympathetic-leaning autonomic state';
+		narrative =
+			'Catecholaminergic drive dominates this pattern, so the sinus node accelerates, the rhythm becomes more metronomic, and repolarization shortens relative to rest.';
+	}
+
+	const notes = [
+		respiratoryCoupling > 0.55
+			? 'Beat-to-beat variability is prominent, so the tracing behaves more like respiratory sinus arrhythmia than a metronomic rhythm.'
+			: 'Respiratory coupling is present but muted, so the rhythm strip reads closer to a steady sinus cadence.',
+		avNodalBrake > 0.48
+			? 'The PR interval suggests stronger AV nodal braking, which is a classic place for vagal influence to appear on surface ECG.'
+			: 'AV nodal timing remains relatively brisk, so autonomic changes are expressed more through rate than through marked PR prolongation.',
+		qtcBazettMs > 450
+			? 'The repolarization window is relatively long in this teaching model, so autonomic slowing is easier to connect with QT behavior.'
+			: qtcBazettMs < 360
+				? 'The shorter corrected QT fits a faster, more adrenergic teaching state with compressed repolarization timing.'
+				: 'Corrected QT stays in a mid-range teaching zone, which keeps the emphasis on autonomic tone rather than repolarization extremes.',
+	];
+
+	return {
+		autonomicState,
+		vagalTone: round(vagalTone, 3),
+		sympatheticDrive: round(sympatheticDrive, 3),
+		respiratoryCoupling: round(respiratoryCoupling, 3),
+		avNodalBrake: round(avNodalBrake, 3),
+		narrative,
+		notes,
+	};
+}
+
 function parseParams(url: URL): ECGParams {
-	const params = { ...DEFAULTS };
-	for (const key of Object.keys(DEFAULTS) as (keyof ECGParams)[]) {
+	const params = { ...defaultEcgParams };
+	for (const key of Object.keys(defaultEcgParams) as (keyof ECGParams)[]) {
 		const raw = url.searchParams.get(key);
 		if (raw !== null) {
 			const parsed = parseFloat(raw);
@@ -395,7 +427,7 @@ function parseParams(url: URL): ECGParams {
 }
 
 function simulate(params: ECGParams): ECGResult {
-	const leads = Object.fromEntries(LEAD_NAMES.map((name) => [name, [] as ECGPoint[]])) as Record<LeadName, ECGPoint[]>;
+	const leads = Object.fromEntries(ecgLeadNames.map((name) => [name, [] as ECGPoint[]])) as Record<ECGLeadName, ECGPoint[]>;
 	const stepCount = Math.floor(params.duration / params.dt);
 	const axisRad = params.axisDegrees * DEG_TO_RAD;
 	const precordialRotRad = params.precordialRotation * DEG_TO_RAD;
@@ -407,7 +439,11 @@ function simulate(params: ECGParams): ECGResult {
 		const t = i * params.dt;
 		const seconds = t / 1000;
 
-		const instantRate = clamp(params.heartRate * (1 + params.rhythmIrregularity * Math.sin(2 * Math.PI * 0.1 * seconds)), 30, 240);
+		const instantRate = clamp(
+			params.heartRate * (1 + params.rhythmIrregularity * Math.sin(2 * Math.PI * 0.1 * seconds)),
+			30,
+			240
+		);
 		const cycleMs = 60000 / instantRate;
 
 		phaseMs += params.dt;
@@ -446,7 +482,7 @@ function simulate(params: ECGParams): ECGResult {
 		const perLeadNoise = params.noise * 0.25;
 		const gain = params.gain;
 
-		const values: Record<LeadName, number> = {
+		const values: Record<ECGLeadName, number> = {
 			I: leadI * gain + common + perLeadNoise * randomNormal(),
 			II: leadII * gain + common + perLeadNoise * randomNormal(),
 			III: leadIII * gain + common + perLeadNoise * randomNormal(),
@@ -461,36 +497,48 @@ function simulate(params: ECGParams): ECGResult {
 			V6: v6 * gain + common + perLeadNoise * randomNormal(),
 		};
 
-		for (const name of LEAD_NAMES) {
+		for (const name of ecgLeadNames) {
 			leads[name].push({
-				t: parseFloat(t.toFixed(2)),
-				mv: parseFloat(values[name].toFixed(4)),
+				t: round(t, 2),
+				mv: round(values[name], 4),
 			});
 		}
 	}
 
 	const rrMsNominal = 60000 / params.heartRate;
 	const qtcBazettMs = params.qtInterval / Math.sqrt(rrMsNominal / 1000);
+	const representativeMorphology = getCycleMorphology(rrMsNominal, params);
+	const beat = {
+		rhythmStripLead: 'II' as const,
+		intervals: {
+			rrMs: round(rrMsNominal, 1),
+			prMs: round(params.prInterval, 1),
+			qrsMs: round(params.qrsDuration, 1),
+			qtMs: round(params.qtInterval, 1),
+		},
+		landmarks: buildBeatLandmarks(representativeMorphology),
+	};
 
 	return {
 		params,
 		leads,
 		activation: buildActivationFrames(params),
+		beat,
 		summary: {
 			beatsEstimated: Math.max(1, Math.round(params.duration / rrMsNominal)),
-			rrMsNominal: parseFloat(rrMsNominal.toFixed(1)),
-			qtcBazettMs: parseFloat(qtcBazettMs.toFixed(1)),
+			rrMsNominal: round(rrMsNominal, 1),
+			qtcBazettMs: round(qtcBazettMs, 1),
 			electricalAxis: classifyAxis(params.axisDegrees),
-			dominantRhythm:
-				params.rhythmIrregularity < 0.03 ? 'Regular sinus-like rhythm' : params.rhythmIrregularity < 0.1 ? 'Mild sinus arrhythmia-like variability' : 'Marked rhythm variability',
+			dominantRhythm: classifyRhythm(params),
 		},
+		neurocardiac: buildNeurocardiacSummary(params, qtcBazettMs),
 		explanation: {
-			model: 'Synthetic Gaussian-wave ECG model projected to 12 leads and a 3-axis cardiac dipole',
+			model: 'Synthetic Gaussian-wave ECG model projected to 12 leads and a 3-axis cardiac dipole, then interpreted through an autonomic teaching lens.',
 			notes: [
 				'This is an educational forward model, not a diagnostic-grade simulator.',
 				'Limb leads follow Einthoven relationships (III = II - I; augmented leads derived from I/II).',
-				'Precordial leads are generated from a rotated dipole projection to mimic R-wave progression.',
-				'The 3D view reuses the same dipole and highlights which lead is most aligned with the instantaneous vector.',
+				'Precordial leads are generated from a rotated dipole projection to mimic R-wave progression and chest lead dominance shifts.',
+				'The neurocardiac layer estimates how vagal braking, sympathetic drive, and respiratory coupling would change the surface rhythm in a teaching context.',
 			],
 		},
 	};
