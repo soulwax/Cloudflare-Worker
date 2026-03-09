@@ -24,7 +24,7 @@ export const moduleCards: ModuleCard[] = [
     slug: "brain-atlas",
     title: "Brain Atlas",
     description:
-      "Explore major regions in Chapter 1, then switch to Chapter 2 for interlinked circuits.",
+      "Explore major regions, trace interlinked circuits, and practice case-based localization in one atlas.",
     badge: "Anatomy",
     href: "/brain-atlas",
   },

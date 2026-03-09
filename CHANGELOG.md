@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.18.0] - 2026-03-09
+
+### Added
+
+- Added reusable instructional infrastructure for case mode and compare mode, including shared case types, curriculum metadata, and presentation components for vignette questions, reveal panels, and side-by-side comparison.
+- Added the first case-based localization workflow to `Brain Atlas`, with selectable clinical vignettes, reveal logic, and follow-up module guidance.
+
+### Changed
+
+- Updated the Brain Atlas experience so students can practice localization before revealing the target structure, instead of only browsing regional summaries.
+- Updated the home-page module copy to surface Brain Atlas as an anatomy and case-based teaching module.
+
 ## [0.17.0] - 2026-03-09
 
 ### Added

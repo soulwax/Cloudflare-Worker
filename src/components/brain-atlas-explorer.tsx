@@ -1,6 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { CompareShell } from "~/components/compare-shell";
+import { CaseQuestionPanel } from "~/components/case-question-panel";
+import { CaseShell } from "~/components/case-shell";
+import { RevealPanel } from "~/components/reveal-panel";
+import { brainAtlasCases } from "~/core/cases/brain-atlas";
 import {
   atlasCategories,
   atlasChapters,
@@ -9,6 +14,7 @@ import {
   type AtlasChapterId,
   type AtlasRegion,
 } from "~/lib/brain-atlas";
+import { getCurriculumModule } from "~/lib/curriculum";
 
 const BRAIN_OUTLINE =
   "M58 136 C70 78 122 46 184 44 C258 42 320 78 332 128 C344 172 318 208 282 224 C248 240 214 242 188 244 C158 246 136 262 112 260 C94 258 80 244 78 222 C54 206 46 176 58 136Z";
@@ -38,9 +44,23 @@ function categoryColor(region: AtlasRegion) {
 export function BrainAtlasExplorer() {
   const [chapter, setChapter] = useState<AtlasChapterId>("functions");
   const [regionId, setRegionId] = useState<string>(DEFAULT_REGION.id);
+  const [caseId, setCaseId] = useState<string>(brainAtlasCases[0]!.id);
+  const [revealed, setRevealed] = useState(false);
   const region = useMemo(() => regionById(regionId), [regionId]);
+  const activeCase = useMemo(
+    () => brainAtlasCases.find((item) => item.id === caseId) ?? brainAtlasCases[0]!,
+    [caseId],
+  );
+  const targetRegion = useMemo(
+    () => regionById(activeCase.expectedRegionId),
+    [activeCase],
+  );
   const chapterMeta = atlasChapters.find((item) => item.id === chapter)!;
   const linkedIds = region.chapter2.interlinks.map((link) => link.target);
+  const followUpTitles = activeCase.followUpModules.map(
+    (slug) => getCurriculumModule(slug)?.title ?? slug,
+  );
+  const selectionMatchesCase = region.id === targetRegion.id;
 
   return (
     <div className="space-y-6">
@@ -75,6 +95,103 @@ export function BrainAtlasExplorer() {
           {chapterMeta.summary}
         </p>
       </section>
+
+      <CaseShell
+        eyebrow="Case Mode"
+        title="Practice localization before you reveal the answer"
+        summary="This is the first step toward case-based neurology teaching across the app. Pick the structure that best explains the vignette, then compare your selection against the strongest localization target."
+        actions={
+          <>
+            {brainAtlasCases.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => {
+                  setCaseId(item.id);
+                  setRegionId(item.startingRegionId);
+                  setRevealed(false);
+                  setChapter("functions");
+                }}
+                className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+                  item.id === activeCase.id
+                    ? "bg-cyan-300 text-slate-950 shadow-[0_10px_24px_rgba(103,211,255,0.24)]"
+                    : "border border-white/10 bg-white/6 text-slate-300 hover:bg-white/10 hover:text-white"
+                }`}
+              >
+                {item.title}
+              </button>
+            ))}
+          </>
+        }
+      >
+        <div className="space-y-5">
+          <CaseQuestionPanel
+            title={activeCase.title}
+            oneLiner={activeCase.oneLiner}
+            chiefComplaint={activeCase.chiefComplaint}
+            history={activeCase.history}
+            examFindings={activeCase.examFindings}
+            prompt={activeCase.prompt}
+            hints={activeCase.hints}
+          />
+
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setRevealed(true)}
+              className="rounded-full bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 shadow-[0_12px_28px_rgba(103,211,255,0.24)] transition hover:-translate-y-0.5"
+            >
+              Reveal localization
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setRegionId(activeCase.startingRegionId);
+                setRevealed(false);
+              }}
+              className="rounded-full border border-white/10 bg-white/6 px-5 py-3 text-sm font-semibold text-slate-100 transition hover:bg-white/10"
+            >
+              Reset selection
+            </button>
+            <p className="text-sm text-slate-300">
+              Current pick: <span className="font-semibold text-white">{region.name}</span>
+            </p>
+          </div>
+
+          {revealed ? (
+            <>
+              <RevealPanel
+                correct={selectionMatchesCase}
+                selectedLabel={region.name}
+                targetLabel={targetRegion.name}
+                explanation={targetRegion.chapter1.clinicalLink}
+                teachingPoints={activeCase.teachingPoints}
+                linkedModules={followUpTitles}
+              />
+
+              <CompareShell
+                title="Your selection versus best-fit localization"
+                leftLabel={`Your pick: ${region.shortLabel}`}
+                rightLabel={`Target: ${targetRegion.shortLabel}`}
+                left={
+                  <>
+                    <p className="font-semibold text-white">{region.name}</p>
+                    <p className="mt-2">{region.chapter1.summary}</p>
+                    <p className="mt-3">{region.chapter1.clinicalLink}</p>
+                  </>
+                }
+                right={
+                  <>
+                    <p className="font-semibold text-white">{targetRegion.name}</p>
+                    <p className="mt-2">{targetRegion.chapter1.summary}</p>
+                    <p className="mt-3">{targetRegion.chapter1.clinicalLink}</p>
+                  </>
+                }
+              />
+            </>
+          ) : null}
+        </div>
+      </CaseShell>
 
       <section className="grid gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(320px,0.95fr)]">
         <div className="rounded-[28px] border border-white/10 bg-white/6 p-5 backdrop-blur">
