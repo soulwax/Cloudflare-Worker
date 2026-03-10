@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.26.0] - 2026-03-10
+
+### Added
+
+- Added an interactive `ECG` lead spotlight with full-scale single-lead review, live peak/span metrics, and direct lead selection.
+
+### Changed
+
+- Reworked `ECG` around a brighter diagnostic paper desk that groups the 12-lead sheet, rhythm strip, focus lead, and rapid summary cards into one primary reading surface.
+- Moved the main `ECG` tracing surface higher in the page flow and highlighted the selected lead across the sheet so bedside-style interval inspection is easier.
+
 ## [0.25.0] - 2026-03-09
 
 ### Added
